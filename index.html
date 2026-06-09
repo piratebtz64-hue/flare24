@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flare24 • L’espace privé</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600&display=swap');
+        
+        :root {
+            --gold: #C5A46E;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .heading-serif {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .premium-gradient {
+            background: linear-gradient(145deg, #0A0A0A, #111111);
+        }
+
+        .glass {
+            background: rgba(17, 17, 17, 0.92);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(197, 164, 110, 0.12);
+        }
+
+        .section-header {
+            font-size: 12px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            color: #C5A46E;
+        }
+
+        .flare-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .flare-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+        }
+
+        .nav-active {
+            color: #C5A46E;
+            border-bottom: 2px solid #C5A46E;
+        }
+
+        .premium-shadow {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3),
+                        0 4px 6px -4px rgb(0 0 0 / 0.3);
+        }
+
+        .chat-bubble {
+            max-width: 78%;
+            padding: 13px 18px;
+            border-radius: 20px;
+            font-size: 14.5px;
+            line-height: 1.45;
+        }
+
+        .message-sent {
+            background: #C5A46E;
+            color: #111111;
+            border-bottom-right-radius: 6px;
+        }
+
+        .message-received {
+            background: #1F1F1F;
+            color: #F5F5F5;
+            border-bottom-left-radius: 6px;
+        }
+
+        .countdown {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: "tnum";
+        }
+
+        .luxury-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .luxury-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgb(197 164 110 / 0.25);
+        }
+
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover {
+            color: #C5A46E;
+        }
+
+        .metric {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .waveform {
+            display: flex;
+            align-items: flex-end;
+            height: 34px;
+            gap: 3.5px;
+        }
+        
+        .waveform-bar {
+            width: 5px;
+            background: #C5A46E;
+            animation: waveform 1.1s infinite ease-in-out;
+            border-radius: 9999px;
+        }
+
+        @keyframes waveform {
+            0%, 100% { height: 5px; }
+            50% { height: 30px; }
+        }
+
+        .notification {
+            animation: slideIn 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(18px); opacity: 0; }
+            to   { transform: translateY(0);   opacity: 1; }
+        }
+
+        .private-badge {
+            background: linear-gradient(90deg, #C5A46E, #A67C52);
+            color: #111111;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+        }
+
+        .trust-score {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .flare-tag {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            background: rgba(197, 164, 110, 0.1);
+            color: #C5A46E;
+            font-weight: 500;
+        }
+
+        .tab-btn {
+            position: relative;
+        }
+        
+        .tab-btn.active {
+            color: #C5A46E;
+        }
+        
+        .tab-btn.active:after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #C5A46E;
+        }
+    </style>
+</head>
+<body class="bg-[#0A0A0A] text-[#F5F5F5]">
+
+    <!-- Navbar -->
+    <nav class="border-b border-white/10 bg-[#0A0A0A]/95 backdrop-blur-2xl sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto">
+            <div class="px-8 py-5 flex items-center justify-between">
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#C5A46E] to-[#A67C52] flex items-center justify-center shadow-inner">
+                            <i class="fa-solid fa-gem text-[#0A0A0A] text-lg"></i>
+                        </div>
+                        <div>
+                            <span class="heading-serif text-[29px] tracking-[-1.5px] font-bold">Flare24</span>
+                        </div>
+                    </div>
+                    <div class="px-3.5 py-1 rounded-full bg-white/5 text-xs font-medium flex items-center gap-x-2 border border-white/10">
+                        <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                        <span class="text-emerald-400 text-xs font-semibold">412 membres actifs</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-x-2.5">
+                    <!-- Search -->
+                    <div class="relative w-80">
+                        <input id="global-search" 
+                               type="text" 
+                               placeholder="Rechercher un membre ou un Flare..." 
+                               class="w-full bg-white/5 border border-white/10 text-sm rounded-3xl pl-11 py-2.5 focus:outline-none focus:border-[#C5A46E]/40 transition-all"
+                               onkeyup="filterGlobal()">
+                        <i class="fa-solid fa-search absolute left-4.5 top-3.5 text-white/40"></i>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="relative">
+                        <button onclick="showNotifications()" 
+                                class="w-11 h-11 flex items-center justify-center rounded-3xl hover:bg-white/5 transition-colors relative">
+                            <i class="fa-solid fa-bell text-xl text-white/70"></i>
+                            <div id="notif-badge" 
+                                 class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1.5 bg-[#C5A46E] text-[#111111] text-[10px] font-bold rounded-full flex items-center justify-center hidden">0</div>
+                        </button>
+                    </div>
+
+                    <!-- Profile -->
+                    <div onclick="showProfile()" class="flex items-center gap-x-3 cursor-pointer hover:bg-white/5 px-2.5 py-1.5 rounded-3xl transition-colors">
+                        <div class="text-right">
+                            <div class="text-sm font-semibold" id="nav-username">Camille L.</div>
+                            <div class="text-[10px] text-white/50 -mt-0.5">Black Tier • Trust 94</div>
+                        </div>
+                        <div class="w-9 h-9 rounded-2xl overflow-hidden border border-white/20 ring-1 ring-white/10">
+                            <img src="https://i.pravatar.cc/36?img=28" class="w-full h-full object-cover" alt="Profile">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-screen-2xl mx-auto px-8 pt-8 pb-20">
+        
+        <!-- Header -->
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <h1 class="heading-serif text-6xl tracking-tighter">Bonsoir, Camille.</h1>
+                <p class="text-white/60 mt-1.5 text-lg">Il y a <span class="font-semibold text-[#C5A46E]">47 Flares</span> actives à Paris ce soir.</p>
+            </div>
+            
+            <button onclick="showCreateFlareModal()"
+                    class="luxury-btn flex items-center gap-x-3 bg-[#C5A46E] hover:bg-[#B38B5A] transition-all text-[#111111] px-9 py-3.5 rounded-3xl font-semibold text-sm shadow-lg active:scale-[0.985]">
+                <i class="fa-solid fa-plus"></i>
+                <span>Allumer un Flare</span>
+            </button>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-9">
+            <div class="glass rounded-3xl p-5 border border-white/10">
+                <div class="text-xs text-white/50 mb-1">Flares actives près de toi</div>
+                <div class="text-4xl font-semibold metric">47</div>
+                <div class="text-emerald-400 text-xs mt-1 flex items-center gap-x-1">
+                    <i class="fa-solid fa-arrow-trend-up"></i> <span>+9 depuis ce matin</span>
+                </div>
+            </div>
+            <div class="glass rounded-3xl p-5 border border-white/10">
+                <div class="text-xs text-white/50 mb-1">Ton Trust Score</div>
+                <div class="flex items-baseline gap-x-2">
+                    <div class="text-4xl font-semibold metric" id="trust-score">94</div>
+                    <div class="text-emerald-400 text-sm">/100</div>
+                </div>
+                <div class="text-xs text-white/50">Top 8% des membres</div>
+            </div>
+            <div class="glass rounded-3xl p-5 border border-white/10">
+                <div class="text-xs text-white/50 mb-1">Rencontres ce mois</div>
+                <div class="text-4xl font-semibold metric">7</div>
+                <div class="text-xs text-[#C5A46E] mt-1">4 excellentes notes</div>
+            </div>
+            <div class="glass rounded-3xl p-5 border border-white/10">
+                <div class="text-xs text-white/50 mb-1">Flares catchées cette semaine</div>
+                <div class="text-4xl font-semibold metric">23</div>
+                <div class="text-xs text-white/50 mt-1">Record personnel</div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex items-center gap-x-1 mb-6 border-b border-white/10 pb-1 overflow-x-auto">
+            <button onclick="switchTab(0)" class="tab-btn nav-item px-6 py-2.5 text-sm font-medium rounded-2xl flex items-center gap-x-2 active" id="tab-0">
+                <i class="fa-solid fa-compass"></i>
+                <span>Découvrir</span>
+            </button>
+            <button onclick="switchTab(1)" class="tab-btn nav-item px-6 py-2.5 text-sm font-medium rounded-2xl flex items-center gap-x-2" id="tab-1">
+                <i class="fa-solid fa-tower-broadcast"></i>
+                <span>Mes Flares <span id="my-flares-count" class="text-xs bg-white/10 px-1.5 rounded ml-1">2</span></span>
+            </button>
+            <button onclick="switchTab(2)" class="tab-btn nav-item px-6 py-2.5 text-sm font-medium rounded-2xl flex items-center gap-x-2" id="tab-2">
+                <i class="fa-solid fa-user-tie"></i>
+                <span>Le Concierge</span>
+            </button>
+            <button onclick="switchTab(3)" class="tab-btn nav-item px-6 py-2.5 text-sm font-medium rounded-2xl flex items-center gap-x-2" id="tab-3">
+                <i class="fa-solid fa-lock"></i>
+                <span>Le Vault</span>
+            </button>
+            <button onclick="switchTab(4)" class="tab-btn nav-item px-6 py-2.5 text-sm font-medium rounded-2xl flex items-center gap-x-2" id="tab-4">
+                <i class="fa-solid fa-bars-staggered"></i>
+                <span>Live Feed</span>
+            </button>
+        </div>
+
+        <!-- TAB 0: Découvrir -->
+        <div id="tab-content-0">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <span class="section-header">FLARES ACTIVES • PARIS</span>
+                </div>
+                <div class="flex items-center gap-x-3">
+                    <div class="flex items-center bg-white/5 rounded-2xl p-1 text-sm">
+                        <div class="px-4 py-1.5 text-xs font-medium">Distance max</div>
+                        <input type="range" id="distance-slider" min="1" max="50" value="18" 
+                               class="accent-[#C5A46E] w-28 mx-2" oninput="filterFlares()">
+                        <span id="distance-value" class="font-mono text-xs w-8 text-right">18km</span>
+                    </div>
+                    
+                    <select id="sort-select" onchange="filterFlares()" 
+                            class="bg-white/5 border border-white/10 text-sm rounded-2xl px-4 py-2 focus:outline-none">
+                        <option value="urgency">Les plus urgentes</option>
+                        <option value="proximity">Les plus proches</option>
+                        <option value="compatibility">Meilleure compatibilité</option>
+                        <option value="intensity">Intensité</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="flares-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- TAB 1: Mes Flares -->
+        <div id="tab-content-1" class="hidden">
+            <div class="flex justify-between items-center mb-4">
+                <span class="section-header">TES FLARES ACTIVES</span>
+                <button onclick="showCreateFlareModal()" class="text-xs px-5 py-2 rounded-2xl border border-white/20 hover:bg-white/5 transition-colors flex items-center gap-x-2">
+                    <i class="fa-solid fa-plus text-xs"></i>
+                    <span>Créer un nouveau Flare</span>
+                </button>
+            </div>
+            <div id="my-flares-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- TAB 2: Le Concierge -->
+        <div id="tab-content-2" class="hidden">
+            <div class="glass rounded-3xl p-8 border border-white/10">
+                <div class="flex items-center gap-x-4 mb-6">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#C5A46E] to-[#A67C52] flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-user-tie text-[#111111] text-3xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-xl">Votre Concierge personnel</div>
+                        <div class="text-white/60 text-sm">Isabelle • Black Tier depuis 2023</div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="text-white/70">"J’ai sélectionné ces opportunités pour vous ce soir. Elles correspondent particulièrement à votre style et à votre énergie du moment."</p>
+                </div>
+
+                <div id="concierge-suggestions" class="space-y-3">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Le Vault -->
+        <div id="tab-content-3" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+                <span class="section-header">VOTRE VAULT • ENCRYPTED</span>
+                <div class="text-xs px-3 py-1 bg-emerald-900/30 text-emerald-400 rounded-full flex items-center gap-x-1.5">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Chiffré • Self-destruct activé</span>
+                </div>
+            </div>
+            <div id="vault-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- TAB 4: Live Feed -->
+        <div id="tab-content-4" class="hidden">
+            <div class="glass rounded-3xl p-6 border border-white/10">
+                <div class="flex items-center gap-x-2 mb-5">
+                    <i class="fa-solid fa-tower-broadcast text-[#C5A46E]"></i>
+                    <span class="font-semibold">Activité en direct • Black Tier</span>
+                </div>
+                <div id="live-feed" class="space-y-3 text-sm">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Create Flare Modal -->
+    <div id="create-modal" onclick="if (event.target.id === 'create-modal') hideCreateModal()" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center">
+        <div onclick="event.stopPropagation()" class="glass w-full max-w-lg rounded-3xl border border-white/10 p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <div class="font-semibold text-2xl">Allumer un Flare</div>
+                    <div class="text-xs text-white/50">Visible maximum 4 heures • Expiration automatique</div>
+                </div>
+                <button onclick="hideCreateModal()" class="text-white/50 hover:text-white"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="text-xs text-white/60 block mb-1.5">Durée du Flare</label>
+                    <select id="flare-duration" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm">
+                        <option value="30">30 minutes</option>
+                        <option value="60" selected>1 heure</option>
+                        <option value="120">2 heures</option>
+                        <option value="240">4 heures (maximum)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs text-white/60 block mb-1.5">Niveau d’intensité</label>
+                    <div class="flex gap-2">
+                        <div onclick="selectIntensity(1, this)" class="intensity-btn flex-1 text-center py-2.5 rounded-2xl border border-white/20 cursor-pointer text-sm">Subtil</div>
+                        <div onclick="selectIntensity(2, this)" class="intensity-btn flex-1 text-center py-2.5 rounded-2xl border border-white/20 cursor-pointer text-sm bg-[#C5A46E] text-black">Sensuel</div>
+                        <div onclick="selectIntensity(3, this)" class="intensity-btn flex-1 text-center py-2.5 rounded-2xl border border-white/20 cursor-pointer text-sm">Intense</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-white/60 block mb-1.5">Ce que vous cherchez ce soir</label>
+                    <div class="flex flex-wrap gap-2" id="tags-container">
+                        <!-- Tags added by JS -->
+                    </div>
+
+                <div>
+                    <label class="text-xs text-white/60 block mb-1.5">Niveau de consentement</label>
+                    <select id="consent-level" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm">
+                        <option value="1">Niveau 1 — Curiosité &amp; conversation</option>
+                        <option value="2" selected>Niveau 2 — Séduction &amp; connexion physique</option>
+                        <option value="3">Niveau 3 — Expérience intense &amp; sans filtre</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-8 flex gap-3">
+                <button onclick="hideCreateModal()" class="flex-1 py-3.5 rounded-2xl border border-white/20 text-sm font-medium">Annuler</button>
+                <button onclick="createFlare()" class="flex-1 py-3.5 rounded-2xl bg-[#C5A46E] text-[#111111] font-semibold text-sm">Allumer mon Flare</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div id="chat-modal" onclick="if (event.target.id === 'chat-modal') hideChatModal()" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[110] flex items-center justify-center">
+        <div onclick="event.stopPropagation()" class="glass w-full max-w-lg rounded-3xl border border-white/10 overflow-hidden flex flex-col" style="height: 620px; max-height: 85vh;">
+            <!-- Chat Header -->
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/30">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-9 h-9 rounded-2xl overflow-hidden border border-white/20">
+                        <img id="chat-avatar" src="https://i.pravatar.cc/36?img=28" class="w-full h-full object-cover" alt="">
+                    </div>
+                    <div>
+                        <div class="font-semibold" id="chat-name"></div>
+                        <div class="text-xs text-emerald-400 flex items-center gap-x-1.5">
+                            <span id="chat-distance"></span>
+                            <span class="text-white/30">•</span>
+                            <span id="chat-countdown" class="countdown font-mono text-[#C5A46E]"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-x-1">
+                    <button onclick="proposeMeetup()" class="text-xs px-4 py-1.5 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors flex items-center gap-x-1.5">
+                        <i class="fa-solid fa-handshake text-xs"></i>
+                        <span class="text-xs">Proposer un rendez-vous</span>
+                    </button>
+                    <button onclick="hideChatModal()" class="w-9 h-9 flex items-center justify-center text-white/50 hover:text-white"><i class="fa-solid fa-times"></i></button>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-6 space-y-5 bg-[#0A0A0A]">
+                <!-- Messages populated by JS -->
+            </div>
+
+            <!-- Quick Replies -->
+            <div class="px-4 py-3 border-t border-white/10 bg-black/20">
+                <div class="flex flex-wrap gap-2 mb-3" id="quick-replies">
+                    <!-- Populated by JS -->
+                </div>
+                
+                <!-- Message Input + Voice -->
+                <div class="flex items-center gap-x-2">
+                    <div class="flex-1 relative">
+                        <input id="chat-input" type="text" placeholder="Écrivez un message..." 
+                               class="w-full bg-white/5 border border-white/10 rounded-3xl px-5 py-3 text-sm focus:outline-none focus:border-[#C5A46E]/40"
+                               onkeypress="if (event.key === 'Enter') sendMessage()">
+                    </div>
+                    
+                    <!-- Voice Note Button -->
+                    <button onclick="startVoiceRecording()" 
+                            class="w-11 h-11 flex items-center justify-center rounded-3xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors">
+                        <i class="fa-solid fa-microphone text-[#C5A46E]"></i>
+                    </button>
+                    
+                    <button onclick="sendMessage()" 
+                            class="w-11 h-11 flex items-center justify-center rounded-3xl bg-[#C5A46E] text-[#111111]">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" onclick="if (event.target.id === 'profile-modal') hideProfileModal()" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center">
+        <div onclick="event.stopPropagation()" class="glass w-full max-w-md rounded-3xl border border-white/10 p-8">
+            <div class="flex justify-between items-center mb-6">
+                <div class="font-semibold text-xl">Mon Profil</div>
+                <button onclick="hideProfileModal()" class="text-white/50 hover:text-white"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
+
+            <div class="space-y-5">
+                <div class="flex items-center gap-x-4">
+                    <div class="w-16 h-16 rounded-2xl overflow-hidden border border-white/20">
+                        <img src="https://i.pravatar.cc/64?img=28" class="w-full h-full object-cover" alt="">
+                    </div>
+                    <div class="flex-1">
+                        <input id="profile-name" type="text" value="Camille L." class="bg-transparent text-xl font-semibold w-full focus:outline-none">
+                        <div class="text-sm text-white/50">Black Tier • Membre depuis janvier 2024</div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-white/60 block mb-1.5">Bio</label>
+                    <textarea id="profile-bio" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm h-20 resize-y">Je cherche des rencontres intenses, sensuelles et sans jugement. J’aime la connexion rapide et authentique.</textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-white/60 block mb-1.5">Âge</label>
+                        <input id="profile-age" type="number" value="29" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-white/60 block mb-1.5">Localisation</label>
+                        <input id="profile-location" type="text" value="Paris, Le Marais" class="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 flex gap-3">
+                <button onclick="hideProfileModal()" class="flex-1 py-3.5 rounded-2xl border border-white/20 text-sm font-medium">Annuler</button>
+                <button onclick="saveProfile()" class="flex-1 py-3.5 rounded-2xl bg-[#C5A46E] text-[#111111] font-semibold text-sm">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind script
+        function initializeTailwind() {
+            document.documentElement.style.setProperty('--accent-gold', '#C5A46E');
+        }
+
+        // Global State
+        let state = {
+            flares: [],
+            myFlares: [],
+            conversations: {},
+            vault: [],
+            notifications: [],
+            profile: {
+                name: "Camille L.",
+                age: 29,
+                location: "Paris, Le Marais",
+                bio: "Je cherche des rencontres intenses, sensuelles et sans jugement. J’aime la connexion rapide et authentique.",
+                trustScore: 94
+            },
+            activeChat: null
+        };
+
+        // Load from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('flare24_state');
+            if (saved) {
+                state = JSON.parse(saved);
+            } else {
+                // Seed initial data
+                seedInitialData();
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('flare24_state', JSON.stringify(state));
+        }
+
+        function seedInitialData() {
+            state.flares = [
+                {
+                    id: 1,
+                    name: "Léa M.",
+                    age: 27,
+                    distance: 2.4,
+                    intensity: 3,
+                    tags: ["BDSM léger", "Dirty talk", "Roleplay"],
+                    consentLevel: 2,
+                    timeLeft: 87,
+                    compatibility: 91,
+                    avatar: "https://i.pravatar.cc/36?img=47"
+                },
+                {
+                    id: 2,
+                    name: "Sofia K.",
+                    age: 31,
+                    distance: 5.8,
+                    intensity: 2,
+                    tags: ["Sensuel", "Slow burn", "Eye contact"],
+                    consentLevel: 2,
+                    timeLeft: 42,
+                    compatibility: 87,
+                    avatar: "https://i.pravatar.cc/36?img=40"
+                },
+                {
+                    id: 3,
+                    name: "Mia R.",
+                    age: 26,
+                    distance: 1.2,
+                    intensity: 3,
+                    tags: ["Exhibition", "Public play", "Voyeurism"],
+                    consentLevel: 3,
+                    timeLeft: 19,
+                    compatibility: 94,
+                    avatar: "https://i.pravatar.cc/36?img=32"
+                }
+            ];
+
+            state.myFlares = [];
+            state.vault = [];
+            state.notifications = [];
+            state.conversations = {};
+        }
+
+        // Tab switching
+        function switchTab(tabIndex) {
+            document.querySelectorAll('[id^="tab-content-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(`tab-content-${tabIndex}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabIndex}`).classList.add('active');
+
+            if (tabIndex === 0) renderFlares();
+            if (tabIndex === 1) renderMyFlares();
+            if (tabIndex === 2) renderConcierge();
+            if (tabIndex === 3) renderVault();
+            if (tabIndex === 4) renderLiveFeed();
+        }
+
+        // Render Flares (Discover)
+        function renderFlares(filteredFlares = null) {
+            const container = document.getElementById('flares-grid');
+            container.innerHTML = '';
+
+            let flaresToShow = filteredFlares || state.flares;
+
+            if (flaresToShow.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-12 text-white/40">Aucun Flare ne correspond à vos critères pour le moment.</div>`;
+                return;
+            }
+
+            flaresToShow.forEach(flare => {
+                const card = document.createElement('div');
+                card.className = `flare-card glass rounded-3xl p-5 border border-white/10 cursor-pointer`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-x-3">
+                            <div class="w-11 h-11 rounded-2xl overflow-hidden border border-white/20">
+                                <img src="${flare.avatar}" class="w-full h-full object-cover">
+                            </div>
+                            <div>
+                                <div class="font-semibold">${flare.name}</div>
+                                <div class="text-xs text-white/50">${flare.age} ans • ${flare.distance} km</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-900/40 text-emerald-400 w-fit ml-auto">${flare.timeLeft} min</div>
+                            <div class="text-[10px] text-white/40 mt-0.5">restantes</div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        ${flare.tags.map(tag => `<span class="flare-tag">${tag}</span>`).join('')}
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-x-1.5">
+                            <div class="text-[#C5A46E]">${flare.compatibility}%</div>
+                            <div class="text-white/40">compatibilité</div>
+                        </div>
+                        <button onclick="event.stopImmediatePropagation(); openChat(${flare.id})" 
+                                class="px-5 py-1.5 text-xs rounded-2xl bg-white/5 hover:bg-[#C5A46E] hover:text-black transition-colors font-medium">
+                            Envoyer un signal
+                        </button>
+                    </div>
+                `;
+                card.onclick = () => openChat(flare.id);
+                container.appendChild(card);
+            });
+        }
+
+        function filterFlares() {
+            const maxDistance = parseInt(document.getElementById('distance-slider').value);
+            const sortBy = document.getElementById('sort-select').value;
+
+            document.getElementById('distance-value').textContent = maxDistance + 'km';
+
+            let filtered = state.flares.filter(f => f.distance <= maxDistance);
+
+            if (sortBy === 'urgency') {
+                filtered.sort((a, b) => a.timeLeft - b.timeLeft);
+            } else if (sortBy === 'proximity') {
+                filtered.sort((a, b) => a.distance - b.distance);
+            } else if (sortBy === 'compatibility') {
+                filtered.sort((a, b) => b.compatibility - a.compatibility);
+            } else if (sortBy === 'intensity') {
+                filtered.sort((a, b) => b.intensity - a.intensity);
+            }
+
+            renderFlares(filtered);
+        }
+
+        function filterGlobal() {
+            const term = document.getElementById('global-search').value.toLowerCase().trim();
+            if (!term) {
+                renderFlares();
+                return;
+            }
+            const filtered = state.flares.filter(f => 
+                f.name.toLowerCase().includes(term) || 
+                f.tags.join(' ').toLowerCase().includes(term)
+            );
+            renderFlares(filtered);
+        }
+
+        // Create Flare
+        let selectedIntensity = 2;
+
+        function selectIntensity(level, element) {
+            selectedIntensity = level;
+            document.querySelectorAll('.intensity-btn').forEach(el => {
+                el.classList.remove('bg-[#C5A46E]', 'text-black');
+                el.classList.add('border-white/20');
+            });
+            element.classList.add('bg-[#C5A46E]', 'text-black');
+            element.classList.remove('border-white/20');
+        }
+
+        function showCreateFlareModal() {
+            const modal = document.getElementById('create-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const container = document.getElementById('tags-container');
+            container.innerHTML = '';
+            const tags = ["BDSM léger", "Dirty talk", "Roleplay", "Sensuel", "Exhibition", "Slow burn", "Public play", "Voyeurism", "Impact play", "Breath play"];
+            
+            tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = `flare-tag cursor-pointer px-3 py-1 text-xs`;
+                span.textContent = tag;
+                span.onclick = () => {
+                    span.classList.toggle('!bg-[#C5A46E]');
+                    span.classList.toggle('!text-black');
+                };
+                container.appendChild(span);
+            });
+
+            setTimeout(() => {
+                const defaultBtn = document.querySelectorAll('.intensity-btn')[1];
+                if (defaultBtn) defaultBtn.click();
+            }, 50);
+        }
+
+        function hideCreateModal() {
+            const modal = document.getElementById('create-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function createFlare() {
+            const duration = parseInt(document.getElementById('flare-duration').value);
+            const consent = parseInt(document.getElementById('consent-level').value);
+
+            const selectedTags = [];
+            document.querySelectorAll('#tags-container span').forEach(el => {
+                if (el.classList.contains('!bg-[#C5A46E]')) {
+                    selectedTags.push(el.textContent);
+                }
+            });
+
+            if (selectedTags.length === 0) selectedTags.push("Sensuel");
+
+            const newFlare = {
+                id: Date.now(),
+                name: state.profile.name,
+                age: state.profile.age,
+                distance: 0.8,
+                intensity: selectedIntensity,
+                tags: selectedTags,
+                consentLevel: consent,
+                timeLeft: duration,
+                compatibility: 98,
+                avatar: "https://i.pravatar.cc/36?img=28",
+                isMine: true
+            };
+
+            state.myFlares.unshift(newFlare);
+            state.flares.unshift(newFlare);
+
+            saveState();
+            hideCreateModal();
+            
+            showToast("Votre Flare est maintenant visible par les membres Black Tier.");
+
+            setTimeout(() => {
+                if (state.myFlares.find(f => f.id === newFlare.id)) {
+                    addNotification(`Léa M. a catché votre Flare`, newFlare.id);
+                }
+            }, 18000);
+
+            renderMyFlares();
+            renderFlares();
+        }
+
+        // Chat System
+        function openChat(flareId) {
+            const flare = state.flares.find(f => f.id === flareId) || state.myFlares.find(f => f.id === flareId);
+            if (!flare) return;
+
+            state.activeChat = flareId;
+
+            document.getElementById('chat-avatar').src = flare.avatar;
+            document.getElementById('chat-name').textContent = flare.name;
+            document.getElementById('chat-distance').textContent = `${flare.distance} km`;
+
+            const countdownEl = document.getElementById('chat-countdown');
+            countdownEl.textContent = `${flare.timeLeft} min restantes`;
+
+            if (window.chatCountdownInterval) clearInterval(window.chatCountdownInterval);
+            window.chatCountdownInterval = setInterval(() => {
+                if (flare.timeLeft > 0) {
+                    flare.timeLeft--;
+                    countdownEl.textContent = `${flare.timeLeft} min restantes`;
+                    saveState();
+                } else {
+                    clearInterval(window.chatCountdownInterval);
+                    countdownEl.textContent = "Expiré";
+                }
+            }, 60000);
+
+            if (!state.conversations[flareId]) {
+                state.conversations[flareId] = [
+                    { from: "them", text: "Salut... ton Flare m’a tout de suite intriguée 🔥", time: "il y a 4 min" }
+                ];
+            }
+
+            renderChatMessages(flareId);
+            renderQuickReplies(flareId);
+
+            document.getElementById('chat-modal').classList.remove('hidden');
+            document.getElementById('chat-modal').classList.add('flex');
+        }
+
+        function renderChatMessages(flareId) {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+
+            const messages = state.conversations[flareId] || [];
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = `flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'}`;
+                div.innerHTML = `
+                    <div class="chat-bubble ${msg.from === 'me' ? 'message-sent' : 'message-received'}">
+                        ${msg.text}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function renderQuickReplies(flareId) {
+            const container = document.getElementById('quick-replies');
+            container.innerHTML = '';
+
+            const replies = [
+                "J’adore ce que tu dis…",
+                "Viens me chercher ?",
+                "Je suis dispo dans 30 min",
+                "Chez toi ou hôtel ?"
+            ];
+
+            replies.forEach(text => {
+                const btn = document.createElement('button');
+                btn.className = `text-xs px-4 py-1.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-colors`;
+                btn.textContent = text;
+                btn.onclick = () => {
+                    sendQuickReply(flareId, text);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function sendQuickReply(flareId, text) {
+            if (!state.conversations[flareId]) state.conversations[flareId] = [];
+            state.conversations[flareId].push({ from: "me", text: text });
+            saveState();
+            renderChatMessages(flareId);
+
+            setTimeout(() => {
+                const replies = [
+                    "Mmmh j’aime beaucoup ton énergie...",
+                    "Je peux être chez toi dans 25 minutes.",
+                    "J’adore quand tu es directe comme ça 🔥",
+                    "Hôtel ou chez toi ? Je suis flexible."
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                state.conversations[flareId].push({ from: "them", text: randomReply });
+                saveState();
+                renderChatMessages(flareId);
+            }, 1200);
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            if (!input.value.trim() || !state.activeChat) return;
+
+            const flareId = state.activeChat;
+            if (!state.conversations[flareId]) state.conversations[flareId] = [];
+
+            state.conversations[flareId].push({ from: "me", text: input.value.trim() });
+            saveState();
+            renderChatMessages(flareId);
+            input.value = '';
+
+            setTimeout(() => {
+                const replies = [
+                    "Exactement ce que je cherchais ce soir...",
+                    "Tu me donnes très envie de te rencontrer rapidement.",
+                    "J’aime ta façon de parler... continue.",
+                    "On se voit dans moins d’une heure ?"
+                ];
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                state.conversations[flareId].push({ from: "them", text: randomReply });
+                saveState();
+                renderChatMessages(flareId);
+            }, 1400);
+        }
+
+        function startVoiceRecording() {
+            showToast("Enregistrement vocal démarré (simulation)");
+
+            setTimeout(() => {
+                if (state.activeChat) {
+                    const flareId = state.activeChat;
+                    if (!state.conversations[flareId]) state.conversations[flareId] = [];
+                    
+                    state.conversations[flareId].push({ 
+                        from: "me", 
+                        text: "🎙️ Message vocal (0:24)" 
+                    });
+                    saveState();
+                    renderChatMessages(flareId);
+                    showToast("Message vocal envoyé");
+                }
+            }, 2200);
+        }
+
+        function proposeMeetup() {
+            if (!state.activeChat) return;
+            
+            const flareId = state.activeChat;
+            const flare = state.flares.find(f => f.id === flareId) || state.myFlares.find(f => f.id === flareId);
+
+            const modal = document.getElementById('chat-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+
+            setTimeout(() => {
+                const successHTML = `
+                    <div class="glass w-full max-w-md rounded-3xl border border-white/10 p-8 text-center">
+                        <div class="mx-auto w-16 h-16 rounded-full bg-emerald-900/30 flex items-center justify-center mb-5">
+                            <i class="fa-solid fa-check text-emerald-400 text-3xl"></i>
+                        </div>
+                        <div class="font-semibold text-xl mb-2">Rendez-vous proposé</div>
+                        <p class="text-white/60 text-sm mb-6">Léa a reçu votre proposition. Elle a 12 minutes pour répondre avant expiration du Flare.</p>
+                        
+                        <button onclick="confirmMeetup(${flareId})" class="w-full py-3.5 rounded-2xl bg-[#C5A46E] text-[#111111] font-semibold text-sm">
+                            Confirmer et ajouter au Vault
+                        </button>
+                    </div>
+                `;
+                const container = document.createElement('div');
+                container.className = 'fixed inset-0 bg-black/70 backdrop-blur-sm z-[120] flex items-center justify-center';
+                container.innerHTML = successHTML;
+                document.body.appendChild(container);
+                
+                window.currentMeetupContainer = container;
+                window.currentMeetupFlareId = flareId;
+            }, 300);
+        }
+
+        function confirmMeetup(flareId) {
+            if (window.currentMeetupContainer) {
+                window.currentMeetupContainer.remove();
+            }
+
+            const flare = state.flares.find(f => f.id === flareId) || state.myFlares.find(f => f.id === flareId);
+            if (flare) {
+                state.vault.unshift({
+                    id: Date.now(),
+                    name: flare.name,
+                    date: new Date().toLocaleDateString('fr-FR'),
+                    rating: null,
+                    notes: ""
+                });
+            }
+
+            saveState();
+            showToast("Rendez-vous confirmé. Ajouté à votre Vault.");
+            
+            setTimeout(() => {
+                renderVault();
+            }, 800);
+        }
+
+        function hideChatModal() {
+            const modal = document.getElementById('chat-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            
+            if (window.chatCountdownInterval) {
+                clearInterval(window.chatCountdownInterval);
+            }
+        }
+
+        // Notifications
+        function addNotification(text, relatedFlareId = null) {
+            const notif = {
+                id: Date.now(),
+                text: text,
+                time: "à l’instant",
+                flareId: relatedFlareId
+            };
+            state.notifications.unshift(notif);
+            saveState();
+            updateNotificationBadge();
+            
+            showToast(text);
+        }
+
+        function updateNotificationBadge() {
+            const badge = document.getElementById('notif-badge');
+            if (state.notifications.length > 0) {
+                badge.textContent = state.notifications.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function showNotifications() {
+            const panel = document.createElement('div');
+            panel.className = `fixed top-20 right-8 w-80 glass rounded-3xl border border-white/10 shadow-2xl z-[200] overflow-hidden`;
+            
+            let html = `<div class="px-5 py-4 border-b border-white/10 flex justify-between items-center">
+                            <div class="font-semibold">Notifications</div>
+                            <button onclick="this.closest('.fixed').remove()" class="text-white/40 hover:text-white"><i class="fa-solid fa-times"></i></button>
+                        </div>`;
+            
+            if (state.notifications.length === 0) {
+                html += `<div class="p-8 text-center text-white/40 text-sm">Aucune notification pour le moment.</div>`;
+            } else {
+                html += `<div class="max-h-80 overflow-y-auto">`;
+                state.notifications.forEach(notif => {
+                    html += `<div onclick="openNotification(${notif.id})" class="px-5 py-4 border-b border-white/10 hover:bg-white/5 cursor-pointer flex gap-x-3">
+                                <div class="flex-1">
+                                    <div class="text-sm">${notif.text}</div>
+                                    <div class="text-xs text-white/40 mt-0.5">${notif.time}</div>
+                                </div>
+                             </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            panel.innerHTML = html;
+            document.body.appendChild(panel);
+        }
+
+        function openNotification(notifId) {
+            const notif = state.notifications.find(n => n.id === notifId);
+            if (!notif) return;
+
+            state.notifications = state.notifications.filter(n => n.id !== notifId);
+            saveState();
+            updateNotificationBadge();
+
+            document.querySelectorAll('.fixed.top-20.right-8').forEach(el => el.remove());
+
+            if (notif.flareId) {
+                openChat(notif.flareId);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 glass px-6 py-3 rounded-2xl border border-white/10 text-sm flex items-center gap-x-3 z-[300] notification`;
+            toast.innerHTML = `
+                <i class="fa-solid fa-check-circle text-[#C5A46E]"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 2800);
+        }
+
+        // Profile
+        function showProfile() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            document.getElementById('profile-name').value = state.profile.name;
+            document.getElementById('profile-bio').value = state.profile.bio;
+            document.getElementById('profile-age').value = state.profile.age;
+            document.getElementById('profile-location').value = state.profile.location;
+        }
+
+        function hideProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function saveProfile() {
+            state.profile.name = document.getElementById('profile-name').value;
+            state.profile.bio = document.getElementById('profile-bio').value;
+            state.profile.age = parseInt(document.getElementById('profile-age').value);
+            state.profile.location = document.getElementById('profile-location').value;
+
+            document.getElementById('nav-username').textContent = state.profile.name;
+            saveState();
+            hideProfileModal();
+            showToast("Profil mis à jour");
+        }
+
+        // Render My Flares
+        function renderMyFlares() {
+            const container = document.getElementById('my-flares-grid');
+            container.innerHTML = '';
+
+            if (state.myFlares.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-8 text-white/40">Vous n’avez pas encore allumé de Flare.</div>`;
+                return;
+            }
+
+            state.myFlares.forEach(flare => {
+                const card = document.createElement('div');
+                card.className = `glass rounded-3xl p-5 border border-white/10`;
+                card.innerHTML = `
+                    <div class="flex justify-between">
+                        <div>
+                            <div class="font-semibold">Votre Flare</div>
+                            <div class="text-xs text-white/50">${flare.tags.join(" • ")}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-xs px-3 py-0.5 rounded-full bg-emerald-900/40 text-emerald-400">${flare.timeLeft} min</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 text-xs text-white/50">3 personnes ont catché votre Flare</div>
+                `;
+                container.appendChild(card);
+            });
+
+            document.getElementById('my-flares-count').textContent = state.myFlares.length;
+        }
+
+        // Concierge
+        function renderConcierge() {
+            const container = document.getElementById('concierge-suggestions');
+            container.innerHTML = '';
+
+            const suggestions = [
+                { name: "Léa M.", reason: "98% de compatibilité + même goût pour l’intensité", id: 1 },
+                { name: "Mia R.", reason: "Proche de vous + très active ce soir", id: 3 },
+                { name: "Sofia K.", reason: "Vous avez déjà eu une excellente note ensemble", id: 2 }
+            ];
+
+            suggestions.forEach(s => {
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10`;
+                div.innerHTML = `
+                    <div>
+                        <div class="font-medium">${s.name}</div>
+                        <div class="text-xs text-white/50">${s.reason}</div>
+                    </div>
+                    <button onclick="openChat(${s.id})" class="px-5 py-2 text-xs rounded-2xl bg-white/5 hover:bg-[#C5A46E] hover:text-black transition-colors">Contacter</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Vault
+        function renderVault() {
+            const container = document.getElementById('vault-grid');
+            container.innerHTML = '';
+
+            if (state.vault.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-8 text-white/40">Votre Vault est vide pour le moment. Les rencontres réussies apparaîtront ici.</div>`;
+                return;
+            }
+
+            state.vault.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `glass rounded-3xl p-5 border border-white/10`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-semibold">${item.name}</div>
+                            <div class="text-xs text-white/50">${item.date}</div>
+                        </div>
+                        <button onclick="reconnectDiscreetly(${item.id})" class="text-xs px-4 py-1.5 rounded-2xl border border-white/20 hover:bg-white/5">Reconnecter discrètement</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function reconnectDiscreetly(vaultId) {
+            showToast("Demande de reconnexion envoyée discrètement.");
+        }
+
+        // Live Feed
+        function renderLiveFeed() {
+            const container = document.getElementById('live-feed');
+            container.innerHTML = `
+                <div class="flex items-start gap-x-3 text-sm">
+                    <div class="w-2 h-2 mt-1.5 bg-emerald-400 rounded-full flex-shrink-0"></div>
+                    <div><span class="text-white/60">Léa M.</span> a catché un Flare dans le 3ème arrondissement il y a 3 min</div>
+                </div>
+                <div class="flex items-start gap-x-3 text-sm">
+                    <div class="w-2 h-2 mt-1.5 bg-emerald-400 rounded-full flex-shrink-0"></div>
+                    <div><span class="text-white/60">Un membre Black Tier</span> a eu une rencontre de 4h dans le Marais</div>
+                </div>
+            `;
+        }
+
+        // Initialize everything
+        function initializeApp() {
+            initializeTailwind();
+            loadState();
+
+            document.getElementById('nav-username').textContent = state.profile.name;
+
+            renderFlares();
+            renderMyFlares();
+            updateNotificationBadge();
+
+            setInterval(() => {
+                if (state.myFlares.length > 0 && Math.random() > 0.6) {
+                    const randomName = ["Léa M.", "Sofia K.", "Mia R.", "Elena V."][Math.floor(Math.random() * 4)];
+                    addNotification(`${randomName} a catché votre Flare`);
+                }
+            }, 25000);
+
+            document.addEventListener('keydown', function(e) {
+                if (e.metaKey && e.key === "/") {
+                    e.preventDefault();
+                    showCreateFlareModal();
+                }
+            });
+
+            console.log('%c[Flare24] Application initialisée avec succès.', 'color:#666');
+        }
+
+        window.onload = initializeApp;
+    </script>
+
+<!-- Access Request Modal - Improved Professional Flow -->
+<div id="access-modal" onclick="if (event.target.id === 'access-modal') hideAccessModal()" class="hidden fixed inset-0 bg-black/80 backdrop-blur-xl z-[200] flex items-center justify-center">
+    <div onclick="event.stopPropagation()" class="glass w-full max-w-md mx-4 rounded-3xl border border-white/10 overflow-hidden">
+        
+        <!-- Step 1: Email Form -->
+        <div id="access-step-1">
+            <div class="px-8 pt-8 pb-6">
+                <div class="flex items-center gap-x-3 mb-6">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#C5A46E] to-[#A67C52] flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-shield-halved text-[#111111] text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold text-2xl tracking-tighter">Accès Privé</div>
+                        <div class="text-white/60 text-sm">Flare24 • Membres vérifiés uniquement</div>
+                    </div>
+                </div>
+
+                <p class="text-white/70 text-[15px] leading-relaxed mb-6">
+                    Flare24 est un espace privé et sélectif. Nous validons chaque demande manuellement pour garantir la qualité et la discrétion de notre communauté.
+                </p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-white/60 block mb-1.5 font-medium">Votre adresse email</label>
+                        <input id="access-email" type="email" placeholder="vous@exemple.com" 
+                               class="w-full bg-white/5 border border-white/15 focus:border-[#C5A46E]/60 rounded-2xl px-4 py-3.5 text-sm outline-none transition-all">
+                    </div>
+                    
+                    <div class="text-[11px] text-white/50 leading-snug">
+                        Nous vous enverrons un email de confirmation. Votre accès sera validé sous 24h maximum (généralement en moins de 2 heures).
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 px-8 py-5 flex gap-3 bg-white/5">
+                <button onclick="hideAccessModal()" 
+                        class="flex-1 py-3.5 rounded-2xl border border-white/20 text-sm font-medium hover:bg-white/5 transition-colors">
+                    Annuler
+                </button>
+                <button onclick="submitAccessRequest()" 
+                        class="flex-1 py-3.5 rounded-2xl bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111111] font-semibold text-sm transition-all">
+                    Demander l’accès privé
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Email Sent Confirmation -->
+        <div id="access-step-2" class="hidden">
+            <div class="px-8 pt-8 pb-6 text-center">
+                <div class="w-16 h-16 mx-auto mb-5 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                    <i class="fa-solid fa-envelope text-emerald-400 text-4xl"></i>
+                </div>
+                
+                <div class="font-semibold text-2xl tracking-tighter mb-2">Email envoyé</div>
+                <p class="text-white/70 text-[15px] max-w-[280px] mx-auto">
+                    Nous avons envoyé un email de confirmation à <span id="sent-email" class="font-medium text-white"></span>.
+                </p>
+                
+                <div class="mt-6 text-left bg-white/5 border border-white/10 rounded-2xl p-4 text-sm">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-info-circle text-[#C5A46E] mt-0.5"></i>
+                        <div class="text-white/70 text-xs leading-relaxed">
+                            Vérifiez votre boîte de réception (et vos spams). Cliquez sur le lien de validation dans l’email pour activer votre accès immédiatement.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 px-8 py-5 bg-white/5">
+                <button onclick="simulateEmailValidation()" 
+                        class="w-full py-3.5 rounded-2xl bg-white text-[#111111] font-semibold text-sm flex items-center justify-center gap-x-2 hover:bg-white/90 transition-all">
+                    <i class="fa-solid fa-check-double"></i>
+                    <span>J’ai validé mon email → Accéder à Flare24</span>
+                </button>
+                
+                <div class="text-center mt-3">
+                    <button onclick="hideAccessModal()" class="text-xs text-white/50 hover:text-white/70">Fermer</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function showAccessModal() {
+    const modal = document.getElementById('access-modal');
+    if (!modal) return;
+    
+    document.getElementById('access-step-1').classList.remove('hidden');
+    document.getElementById('access-step-2').classList.add('hidden');
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+function hideAccessModal() {
+    const modal = document.getElementById('access-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+}
+
+function submitAccessRequest() {
+    const emailInput = document.getElementById('access-email');
+    const email = emailInput.value.trim();
+    
+    if (!email || !email.includes('@')) {
+        alert("Veuillez entrer une adresse email valide.");
+        return;
+    }
+    
+    localStorage.setItem('pending_access_email', email);
+    
+    document.getElementById('access-step-1').classList.add('hidden');
+    document.getElementById('access-step-2').classList.remove('hidden');
+    
+    document.getElementById('sent-email').textContent = email;
+}
+
+function simulateEmailValidation() {
+    const modal = document.getElementById('access-modal');
+    
+    localStorage.setItem('flare24_access_granted', 'true');
+    localStorage.setItem('flare24_access_date', new Date().toISOString());
+    
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    
+    showToast("Accès validé avec succès. Bienvenue sur Flare24.");
+}
+
+function checkAccessStatus() {
+    const granted = localStorage.getItem('flare24_access_granted') === 'true';
+    if (!granted) {
+        console.log('%c[Flare24] Accès non validé - simulation active', 'color:#666');
+    }
+}
+
+setTimeout(() => {
+    checkAccessStatus();
+}, 1200);
+</script>
+
+</body>
+</html>
