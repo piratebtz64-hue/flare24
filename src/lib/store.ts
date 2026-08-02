@@ -85,6 +85,97 @@ function write<T>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/** Demo replies — short, local, discreet, reacts to what you wrote. */
+function buildAutoReply(
+  userText: string,
+  city: string,
+  intent: string,
+  turn: number
+): string {
+  const t = userText.toLowerCase().trim();
+  const short = t.length <= 3;
+
+  if (/^cc$|^salut$|^hey$|^hello$|^bonjour$|^coucou$|^yo$/.test(t) || short) {
+    return pick([
+      `Salut. T'es sur ${city} ce soir ?`,
+      `Hey. Discret de mon côté — t'es libre quand ?`,
+      `Coucou. Ton message tombe bien. T'es où vers ${city} ?`,
+    ]);
+  }
+
+  if (/photo|img|snap|face|visage|instagram|insta/.test(t)) {
+    return pick([
+      `Je reste sans photo ici. On avance au feeling si ça te va.`,
+      `Pas de face sur l'app. On peut se décrire un peu si tu veux.`,
+      `Discret = pas de photo. Par contre je peux te dire le vibe.`,
+    ]);
+  }
+
+  if (/où|ou \?|quartier|place|spot|rencontr/.test(t)) {
+    return pick([
+      `Vers ${city}, un endroit calme. Tu préfères un verre d'abord ou direct privé ?`,
+      `Je peux me déplacer près de ${city}. Tu as un coin en tête ?`,
+      `Un bar discret pour commencer, puis on voit. OK pour toi ?`,
+    ]);
+  }
+
+  if (/heure|quand|dispo|dispo\?|ce soir|maintenant|tout de suite|rapide/.test(t)) {
+    return pick([
+      `Ce soir ça me va. Tu es plutôt 20h ou plus tard ?`,
+      `Je suis flexible sur la prochaine heure. Toi ?`,
+      `Si c'est pour ${intent.toLowerCase()}, dis-moi un créneau précis.`,
+    ]);
+  }
+
+  if (/âge|age|ans|jeune|vieux/.test(t)) {
+    return pick([
+      `Adulte, consentant, discret. Et toi, tu cherches quel type d'échange ?`,
+      `On est sur le même rythme ? Dis-moi ce que tu veux vraiment ce soir.`,
+    ]);
+  }
+
+  if (/hôtel|hotel|appart|chez|chambre|priv/.test(t)) {
+    return pick([
+      `Privé OK pour moi. On fixe le lieu une fois qu'on est alignés.`,
+      `Hôtel ou appart, tant que c'est calme. Tu gères le spot ?`,
+    ]);
+  }
+
+  if (/non|pas intéress|stop|laisse|degage|dégage/.test(t)) {
+    return pick([
+      `OK, pas de souci. Bonne soirée.`,
+      `Compris. Je te laisse tranquille.`,
+    ]);
+  }
+
+  if (turn <= 1) {
+    return pick([
+      `Salut — j'ai vu ton message sur le Flare. T'es dispo sur ${city} ?`,
+      `Hey. ${intent} m'intéresse. Tu veux qu'on clarifie le cadre ?`,
+      `Bien reçu. On reste soft et clair : qu'est-ce que tu cherches concrètement ?`,
+    ]);
+  }
+
+  if (turn === 2) {
+    return pick([
+      `OK. Pour être carré : discret, consentement, on arrête dès que ça ne match pas.`,
+      `Je préfère qu'on se parle 2–3 messages avant de se voir. Ça te va ?`,
+      `Dis-moi ton rythme : verre d'abord ou plus direct ?`,
+    ]);
+  }
+
+  return pick([
+    `Hmm, développe un peu — je veux être sûre qu'on est sur la même longueur d'onde.`,
+    `OK. Et côté timing / lieu sur ${city}, t'as une idée ?`,
+    `Je suis là. Dis-moi ce qui te ferait vraiment kiffer ce soir.`,
+    `Carré. On avance uniquement si c'est clair pour les deux.`,
+  ]);
+}
+
 export function getBlockedIds(): string[] {
   return read<string[]>(BLOCKED_KEY, []);
 }
@@ -184,17 +275,27 @@ export function sendMessage(
     at: Date.now(),
   };
 
+  const prev = all[idx];
+  const myTurns = prev.messages.filter((m) => m.fromMe).length;
+
   all[idx] = {
-    ...all[idx],
-    messages: [...all[idx].messages, msg],
+    ...prev,
+    messages: [...prev.messages, msg],
     updatedAt: Date.now(),
   };
 
+  const replyText = buildAutoReply(
+    text,
+    prev.city,
+    prev.intent,
+    myTurns + 1
+  );
+
   const reply: Message = {
     id: `m_${Date.now() + 1}`,
-    text: "Bien reçu. On peut en parler discrètement.",
+    text: replyText,
     fromMe: false,
-    at: Date.now() + 1,
+    at: Date.now() + 400,
   };
   all[idx].messages.push(reply);
 
