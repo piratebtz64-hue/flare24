@@ -1,12 +1,49 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { getFlares, startConversation, type Flare } from "@/lib/store";
 
+const seed: Flare[] = [
+  {
+    id: "f1",
+    city: "Bayonne",
+    intent: "Ce soir · discret",
+    tag: "Hôtel",
+    trust: 94,
+    expires: "2h",
+    verified: true,
+  },
+  {
+    id: "f2",
+    city: "Biarritz",
+    intent: "Après-midi · intensité",
+    tag: "Appartement",
+    trust: 88,
+    expires: "45min",
+    verified: true,
+  },
+  {
+    id: "f3",
+    city: "Anglet",
+    intent: "Soirée · découverte",
+    tag: "Bar d'abord",
+    trust: 91,
+    expires: "3h",
+    verified: true,
+  },
+  {
+    id: "f4",
+    city: "Saint-Jean-de-Luz",
+    intent: "Maintenant · urgent",
+    tag: "Privé",
+    trust: 96,
+    expires: "20min",
+    verified: true,
+  },
+];
+
 export default function DiscoverPage() {
-  const router = useRouter();
-  const [flares, setFlares] = useState<Flare[]>([]);
+  const [flares, setFlares] = useState<Flare[]>(seed);
   const [filter, setFilter] = useState("Tous");
 
   useEffect(() => {
@@ -14,13 +51,24 @@ export default function DiscoverPage() {
   }, []);
 
   function respond(flare: Flare) {
-    const convo = startConversation(flare);
-    router.push(`/messages/${convo.id}`);
+    try {
+      const convo = startConversation(flare);
+      // Navigation forcée (plus fiable sur mobile que router.push)
+      window.location.href = `/messages/${convo.id}`;
+    } catch {
+      window.location.href = "/messages";
+    }
   }
 
   const filtered = flares.filter((f) => {
     if (filter === "Vérifiés") return f.verified;
-    if (filter === "Ce soir") return f.intent.toLowerCase().includes("soir") || f.expires.includes("h");
+    if (filter === "Ce soir") {
+      return (
+        f.intent.toLowerCase().includes("soir") ||
+        f.expires.includes("h") ||
+        f.expires.includes("min")
+      );
+    }
     return true;
   });
 
@@ -35,6 +83,7 @@ export default function DiscoverPage() {
         {["Tous", "Ce soir", "Vérifiés", "Proches"].map((f) => (
           <button
             key={f}
+            type="button"
             onClick={() => setFilter(f)}
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-medium transition ${
               filter === f
@@ -76,7 +125,7 @@ export default function DiscoverPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-4">
               <span className="text-xs text-white/40 bg-white/5 px-3 py-1 rounded-full">
                 {flare.tag}
               </span>
@@ -85,8 +134,9 @@ export default function DiscoverPage() {
 
             {!flare.mine && (
               <button
+                type="button"
                 onClick={() => respond(flare)}
-                className="mt-4 w-full luxury-btn bg-[#C5A46E]/15 hover:bg-[#C5A46E]/25 text-[#C5A46E] py-3 rounded-2xl text-sm font-semibold transition"
+                className="w-full bg-[#C5A46E] text-[#111111] py-3.5 rounded-2xl text-sm font-semibold active:scale-[0.98] transition"
               >
                 Répondre au Flare
               </button>
