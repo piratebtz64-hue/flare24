@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { addFlare } from "@/lib/store";
+import { trackFlareCreated } from "@/lib/analytics";
 
 const CITIES = ["Bayonne", "Biarritz", "Anglet", "Bidart", "Saint-Jean-de-Luz"];
 const PRESETS = [
@@ -40,12 +41,13 @@ export default function CreateFlarePage() {
       tag,
       expires: duration,
     });
+    trackFlareCreated(city, duration);
     setDone(true);
   }
 
   if (done) {
     return (
-      <div className="px-5 py-16 text-center">
+      <div className="px-5 py-8 pb-28 text-center pt-16">
         <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-emerald-500/10 flex items-center justify-center">
           <span className="text-emerald-400 text-3xl">✓</span>
         </div>
