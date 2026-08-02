@@ -1,4 +1,4 @@
-import { computeTrust } from "@/lib/trust";
+import { computeTrust, normalizeTrust, TRUST_SCHEMA_VERSION } from "@/lib/trust";
 
 export type Flare = {
   id: string;
@@ -31,15 +31,14 @@ const FLARES_KEY = "flare24_flares";
 const CONVOS_KEY = "flare24_convos";
 const BLOCKED_KEY = "flare24_blocked";
 const REPORTS_KEY = "flare24_reports";
+const SCHEMA_KEY = "flare24_schema_v";
 
-/** Démos calibrées : 2/5, 3/5, 4/5 — un seul 5 rare si jamais. */
 const defaultFlares: Flare[] = [
   {
     id: "f1",
     city: "Bayonne",
     intent: "Ce soir · discret",
     tag: "Hôtel",
-    // V1 P1 A1 H0 → 4/5
     trust: computeTrust({
       verified: true,
       hasCity: true,
@@ -56,7 +55,6 @@ const defaultFlares: Flare[] = [
     city: "Biarritz",
     intent: "Après-midi · intensité",
     tag: "Appartement",
-    // V1 P1 A0 H0 → 3/5
     trust: computeTrust({
       verified: true,
       hasCity: true,
@@ -73,7 +71,6 @@ const defaultFlares: Flare[] = [
     city: "Anglet",
     intent: "Soirée · découverte",
     tag: "Bar d'abord",
-    // V0 P1 A0 H0 → 2/5
     trust: computeTrust({
       verified: false,
       hasCity: true,
@@ -90,7 +87,6 @@ const defaultFlares: Flare[] = [
     city: "Bayonne",
     intent: "Maintenant · urgent",
     tag: "Privé",
-    // V1 P1 A0 H1 → 4/5
     trust: computeTrust({
       verified: true,
       hasCity: true,
@@ -118,6 +114,15 @@ function read<T>(key: string, fallback: T): T {
 function write<T>(key: string, value: T) {
   if (typeof window === "undefined") return;
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+/** Une fois par version : purge les vieux flares démo figés (91, 96, etc.). */
+function ensureSchema() {
+  if (typeof window === "undefined") return;
+  const v = localStorage.getItem(SCHEMA_KEY);
+  if (v === String(TRUST_SCHEMA_VERSION)) return;
+  localStorage.removeItem(FLARES_KEY);
+  localStorage.setItem(SCHEMA_KEY, String(TRUST_SCHEMA_VERSION));
 }
 
 function pick<T>(arr: T[]): T {
@@ -245,6 +250,7 @@ export function getExchangeStats(): {
 }
 
 export function getFlares(): Flare[] {
+  ensureSchema();
   const blocked = getBlockedIds();
   const stats = getExchangeStats();
   const custom = read<Flare[]>(FLARES_KEY, []);
@@ -259,14 +265,15 @@ export function getFlares(): Flare[] {
           conversations: stats.conversations,
           reportCount: stats.reportCount,
         })
-      : f.trust > 5
-        ? computeTrust({ verified: f.verified, hasCity: true, hasActivity: true })
-        : f.trust,
+      : normalizeTrust(f.trust, f.verified),
   }));
   const all = [
     ...normalized,
     ...defaultFlares.filter((d) => !normalized.some((c) => c.id === d.id)),
-  ];
+  ].map((f) => ({
+    ...f,
+    trust: normalizeTrust(f.trust, f.verified),
+  }));
   return all.filter((f) => !blocked.includes(f.id));
 }
 
