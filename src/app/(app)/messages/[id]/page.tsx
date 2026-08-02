@@ -1,52 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import {
-  getConversation,
-  sendMessage,
-  type Conversation,
-} from "@/lib/store";
+import { useParams, useSearchParams } from "next/navigation";
+
+type Msg = { id: string; text: string; fromMe: boolean };
 
 export default function ConversationPage() {
   const params = useParams();
-  const id = String(params?.id ?? "");
-  const [convo, setConvo] = useState<Conversation | null>(null);
-  const [text, setText] = useState("");
-  const [ready, setReady] = useState(false);
+  const search = useSearchParams();
+  const id = String(params?.id ?? "chat");
+  const city = search.get("city") || "Pays Basque";
+  const intent = search.get("intent") || "Flare";
 
-  useEffect(() => {
-    if (!id) return;
-    setConvo(getConversation(id) ?? null);
-    setReady(true);
-  }, [id]);
+  const [messages, setMessages] = useState<Msg[]>(() => [
+    {
+      id: "sys",
+      text: `${city} — ${intent}`,
+      fromMe: false,
+    },
+  ]);
+  const [text, setText] = useState("");
+
+  const title = useMemo(() => city, [city]);
 
   function handleSend(e: React.FormEvent) {
     e.preventDefault();
-    if (!text.trim() || !convo) return;
-    const updated = sendMessage(convo.id, text.trim());
-    if (updated) {
-      setConvo({ ...updated });
-      setText("");
-    }
-  }
+    const t = text.trim();
+    if (!t) return;
 
-  if (!ready) {
-    return (
-      <div className="px-5 py-16 text-center text-white/40 text-sm">Chargement…</div>
-    );
-  }
-
-  if (!convo) {
-    return (
-      <div className="px-5 py-16 text-center">
-        <p className="text-white/50 text-sm mb-4">Conversation introuvable.</p>
-        <Link href="/messages" className="text-[#C5A46E] text-sm">
-          Retour aux messages
-        </Link>
-      </div>
-    );
+    const mine: Msg = { id: `m_${Date.now()}`, text: t, fromMe: true };
+    const reply: Msg = {
+      id: `m_${Date.now() + 1}`,
+      text: "Bien reçu. On peut en parler discrètement.",
+      fromMe: false,
+    };
+    setMessages((prev) => [...prev, mine, reply]);
+    setText("");
   }
 
   return (
@@ -55,12 +45,12 @@ export default function ConversationPage() {
         <Link href="/messages" className="text-xs text-white/40">
           ← Messages
         </Link>
-        <div className="font-semibold mt-1">{convo.city}</div>
-        <div className="text-xs text-white/40 truncate">{convo.intent}</div>
+        <div className="font-semibold mt-1">{title}</div>
+        <div className="text-xs text-white/40 truncate">{intent}</div>
       </div>
 
       <div className="flex-1 px-5 py-4 space-y-3">
-        {convo.messages.map((m) => (
+        {messages.map((m) => (
           <div
             key={m.id}
             className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
