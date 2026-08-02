@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { trackLoginSuccess, trackSignupStarted } from "@/lib/analytics";
 
 type Mode = "password" | "magic" | "forgot";
 
@@ -57,6 +58,7 @@ export default function LoginPage() {
       const supabase = createClient();
 
       if (isSignUp) {
+        trackSignupStarted();
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -78,6 +80,7 @@ export default function LoginPage() {
           setError(mapError(signInError.message));
           return;
         }
+        trackLoginSuccess("password");
         router.push("/discover");
         router.refresh();
       }
@@ -112,6 +115,7 @@ export default function LoginPage() {
         return;
       }
 
+      trackLoginSuccess("magic");
       setSent(true);
     } catch {
       setError("Impossible d'envoyer l'email. Réessaie plus tard.");
