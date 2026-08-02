@@ -10,6 +10,11 @@ type Filter = (typeof FILTERS)[number];
 
 const LOCAL_CITIES = ["Bayonne", "Anglet", "Biarritz", "Bidart"];
 
+function trustLabel(raw: number): string {
+  const n = raw > 5 ? Math.min(5, Math.max(1, Math.round(raw / 20))) : raw;
+  return `${n}/5`;
+}
+
 export default function DiscoverPage() {
   const [filter, setFilter] = useState<Filter>("Tous");
   const [flares, setFlares] = useState<Flare[]>([]);
@@ -113,7 +118,7 @@ export default function DiscoverPage() {
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-[#C5A46E] text-sm font-semibold">
-                    {flare.trust}
+                    {trustLabel(flare.trust)}
                   </div>
                   <div className="text-[10px] text-white/40">Trust</div>
                 </div>
