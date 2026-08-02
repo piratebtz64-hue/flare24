@@ -12,6 +12,7 @@ import {
   type Conversation,
   type Flare,
 } from "@/lib/store";
+import { trackMessageSent, trackReportOrBlock } from "@/lib/analytics";
 
 function ChatInner() {
   const params = useParams();
@@ -72,12 +73,14 @@ function ChatInner() {
         };
       });
     }
+    trackMessageSent();
     setText("");
   }
 
   function handleBlock() {
     blockId(rawId);
     if (convo) blockId(convo.id);
+    trackReportOrBlock("block");
     setMenuOpen(false);
     setToast("Conversation bloquée");
     setTimeout(() => router.push("/messages"), 600);
@@ -86,6 +89,7 @@ function ChatInner() {
   function handleReport(reason: string) {
     reportTarget(rawId, reason);
     if (convo) reportTarget(convo.id, reason);
+    trackReportOrBlock("report");
     setMenuOpen(false);
     setToast("Signalement enregistré");
     setTimeout(() => router.push("/messages"), 700);
