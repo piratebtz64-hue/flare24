@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { addFlare } from "@/lib/store";
 import { trackFlareCreated } from "@/lib/analytics";
+import { useGold } from "@/hooks/useGold";
+import { GoldGate } from "@/components/GoldGate";
 
 const CITIES = ["Bayonne", "Biarritz", "Anglet", "Bidart", "Saint-Jean-de-Luz"];
 const PRESETS = [
@@ -15,6 +17,7 @@ const PRESETS = [
 
 export default function CreateFlarePage() {
   const router = useRouter();
+  const { gold, loading: goldLoading } = useGold();
   const [city, setCity] = useState("Bayonne");
   const [intent, setIntent] = useState("");
   const [tag, setTag] = useState("Privé");
@@ -29,6 +32,7 @@ export default function CreateFlarePage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!gold) return;
     const text = intent.trim();
     if (text.length < 3) {
       setError("Décris un peu ce que tu cherches (3 caractères min.).");
@@ -43,6 +47,24 @@ export default function CreateFlarePage() {
     });
     trackFlareCreated(city, duration);
     setDone(true);
+  }
+
+  if (goldLoading) {
+    return (
+      <div className="px-5 py-16 text-center text-white/40 text-sm">Chargement…</div>
+    );
+  }
+
+  if (!gold) {
+    return (
+      <div className="px-5 py-8 pb-28">
+        <h1 className="heading-serif text-4xl tracking-tight mb-6">Allumer un Flare</h1>
+        <GoldGate
+          title="Allumer un Flare = Gold"
+          subtitle="Les membres Gold peuvent publier un Flare visible près d’eux."
+        />
+      </div>
+    );
   }
 
   if (done) {
