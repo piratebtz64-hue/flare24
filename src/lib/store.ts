@@ -5,7 +5,6 @@ export type Flare = {
   city: string;
   intent: string;
   tag: string;
-  /** Trust score 1–5 */
   trust: number;
   expires: string;
   verified: boolean;
@@ -39,7 +38,14 @@ const defaultFlares: Flare[] = [
     city: "Bayonne",
     intent: "Ce soir · discret",
     tag: "Hôtel",
-    trust: computeTrust({ verified: true, hasCity: true, hasActivity: true, accountAgeDays: 14 }),
+    trust: computeTrust({
+      verified: true,
+      hasCity: true,
+      hasActivity: true,
+      accountAgeDays: 14,
+      messagesSent: 12,
+      conversations: 3,
+    }),
     expires: "2h",
     verified: true,
   },
@@ -48,7 +54,13 @@ const defaultFlares: Flare[] = [
     city: "Biarritz",
     intent: "Après-midi · intensité",
     tag: "Appartement",
-    trust: computeTrust({ verified: true, hasCity: true, hasActivity: true }),
+    trust: computeTrust({
+      verified: true,
+      hasCity: true,
+      hasActivity: true,
+      messagesSent: 4,
+      conversations: 1,
+    }),
     expires: "45min",
     verified: true,
   },
@@ -57,7 +69,14 @@ const defaultFlares: Flare[] = [
     city: "Anglet",
     intent: "Soirée · découverte",
     tag: "Bar d'abord",
-    trust: computeTrust({ verified: false, hasCity: true, hasActivity: true, accountAgeDays: 30 }),
+    trust: computeTrust({
+      verified: false,
+      hasCity: true,
+      hasActivity: true,
+      accountAgeDays: 30,
+      messagesSent: 2,
+      conversations: 1,
+    }),
     expires: "3h",
     verified: false,
   },
@@ -66,7 +85,14 @@ const defaultFlares: Flare[] = [
     city: "Bayonne",
     intent: "Maintenant · urgent",
     tag: "Privé",
-    trust: computeTrust({ verified: true, hasCity: true, hasActivity: true, accountAgeDays: 10 }),
+    trust: computeTrust({
+      verified: true,
+      hasCity: true,
+      hasActivity: true,
+      accountAgeDays: 10,
+      messagesSent: 15,
+      conversations: 4,
+    }),
     expires: "20min",
     verified: true,
   },
@@ -194,12 +220,43 @@ export function reportTarget(id: string, reason: string) {
   blockId(id);
 }
 
+/** Historique d'échanges (messages envoyés + conversations + reports). */
+export function getExchangeStats(): {
+  messagesSent: number;
+  conversations: number;
+  reportCount: number;
+} {
+  const convos = read<Conversation[]>(CONVOS_KEY, []);
+  const messagesSent = convos.reduce(
+    (n, c) => n + c.messages.filter((m) => m.fromMe).length,
+    0
+  );
+  const reportCount = read<{ id: string }[]>(REPORTS_KEY, []).length;
+  return {
+    messagesSent,
+    conversations: convos.length,
+    reportCount,
+  };
+}
+
 export function getFlares(): Flare[] {
   const blocked = getBlockedIds();
+  const stats = getExchangeStats();
   const custom = read<Flare[]>(FLARES_KEY, []);
   const normalized = custom.map((f) => ({
     ...f,
-    trust: f.trust > 5 ? computeTrust({ verified: f.verified, hasCity: true, hasActivity: true }) : f.trust,
+    trust: f.mine
+      ? computeTrust({
+          verified: f.verified,
+          hasCity: Boolean(f.city),
+          hasActivity: true,
+          messagesSent: stats.messagesSent,
+          conversations: stats.conversations,
+          reportCount: stats.reportCount,
+        })
+      : f.trust > 5
+        ? computeTrust({ verified: f.verified, hasCity: true, hasActivity: true })
+        : f.trust,
   }));
   const all = [
     ...normalized,
@@ -211,6 +268,7 @@ export function getFlares(): Flare[] {
 export function addFlare(
   flare: Omit<Flare, "id" | "trust" | "verified" | "mine">
 ): Flare {
+  const stats = getExchangeStats();
   const full: Flare = {
     ...flare,
     id: `mine_${Date.now()}`,
@@ -219,6 +277,9 @@ export function addFlare(
       hasCity: Boolean(flare.city),
       hasActivity: true,
       accountAgeDays: 0,
+      messagesSent: stats.messagesSent,
+      conversations: stats.conversations,
+      reportCount: stats.reportCount,
     }),
     verified: false,
     mine: true,
