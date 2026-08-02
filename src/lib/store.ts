@@ -3,6 +3,7 @@ export type Flare = {
   city: string;
   intent: string;
   tag: string;
+  /** Trust score 1–5 (not 0–100). */
   trust: number;
   expires: string;
   verified: boolean;
@@ -30,13 +31,14 @@ const CONVOS_KEY = "flare24_convos";
 const BLOCKED_KEY = "flare24_blocked";
 const REPORTS_KEY = "flare24_reports";
 
+/** Few demo flares — big cities only, Trust 3–5. */
 const defaultFlares: Flare[] = [
   {
     id: "f1",
     city: "Bayonne",
     intent: "Ce soir · discret",
     tag: "Hôtel",
-    trust: 94,
+    trust: 4,
     expires: "2h",
     verified: true,
   },
@@ -45,7 +47,7 @@ const defaultFlares: Flare[] = [
     city: "Biarritz",
     intent: "Après-midi · intensité",
     tag: "Appartement",
-    trust: 88,
+    trust: 3,
     expires: "45min",
     verified: true,
   },
@@ -54,16 +56,16 @@ const defaultFlares: Flare[] = [
     city: "Anglet",
     intent: "Soirée · découverte",
     tag: "Bar d'abord",
-    trust: 91,
+    trust: 5,
     expires: "3h",
-    verified: true,
+    verified: false,
   },
   {
     id: "f4",
-    city: "Saint-Jean-de-Luz",
+    city: "Bayonne",
     intent: "Maintenant · urgent",
     tag: "Privé",
-    trust: 96,
+    trust: 4,
     expires: "20min",
     verified: true,
   },
@@ -89,7 +91,6 @@ function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-/** Demo replies — short, local, discreet, reacts to what you wrote. */
 function buildAutoReply(
   userText: string,
   city: string,
@@ -195,9 +196,14 @@ export function reportTarget(id: string, reason: string) {
 export function getFlares(): Flare[] {
   const blocked = getBlockedIds();
   const custom = read<Flare[]>(FLARES_KEY, []);
+  // Migrate old 0–100 trust scores if still in localStorage
+  const normalized = custom.map((f) => ({
+    ...f,
+    trust: f.trust > 5 ? Math.min(5, Math.max(1, Math.round(f.trust / 20))) : f.trust,
+  }));
   const all = [
-    ...custom,
-    ...defaultFlares.filter((d) => !custom.some((c) => c.id === d.id)),
+    ...normalized,
+    ...defaultFlares.filter((d) => !normalized.some((c) => c.id === d.id)),
   ];
   return all.filter((f) => !blocked.includes(f.id));
 }
@@ -208,8 +214,8 @@ export function addFlare(
   const full: Flare = {
     ...flare,
     id: `mine_${Date.now()}`,
-    trust: 90,
-    verified: true,
+    trust: 3,
+    verified: false,
     mine: true,
   };
   const custom = read<Flare[]>(FLARES_KEY, []);
