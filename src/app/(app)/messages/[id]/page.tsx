@@ -54,24 +54,6 @@ function ChatInner() {
     const updated = sendMessage(convo.id, t) || sendMessage(rawId, t);
     if (updated) {
       setConvo(updated);
-    } else {
-      setConvo((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          messages: [
-            ...prev.messages,
-            { id: `m_${Date.now()}`, text: t, fromMe: true, at: Date.now() },
-            {
-              id: `m_${Date.now() + 1}`,
-              text: "Bien reçu. On peut en parler discrètement.",
-              fromMe: false,
-              at: Date.now() + 1,
-            },
-          ],
-          updatedAt: Date.now(),
-        };
-      });
     }
     trackMessageSent();
     setText("");
