@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CreateFlarePage() {
+  const router = useRouter();
   const [city, setCity] = useState("Bayonne");
   const [intent, setIntent] = useState("");
   const [duration, setDuration] = useState("2h");
@@ -22,17 +24,13 @@ export default function CreateFlarePage() {
         </div>
         <h1 className="heading-serif text-3xl mb-3">Flare allumé</h1>
         <p className="text-white/50 text-sm mb-8 max-w-sm mx-auto">
-          Ton Flare est visible pendant {duration}. Les réponses arriveront ici.
-          (Mode démo — pas encore enregistré en base.)
+          Ton Flare est visible pendant {duration}. Les réponses arriveront dans Messages.
         </p>
         <button
-          onClick={() => {
-            setDone(false);
-            setIntent("");
-          }}
-          className="text-[#C5A46E] text-sm hover:underline"
+          onClick={() => router.push("/discover")}
+          className="luxury-btn bg-[#C5A46E] text-[#111] px-8 py-3 rounded-2xl text-sm font-semibold"
         >
-          Créer un autre
+          Voir les Flares
         </button>
       </div>
     );
