@@ -10,6 +10,7 @@ import {
   TRUST_EXPLAIN_SHORT,
   TRUST_FORMULA,
 } from "@/lib/trust";
+import { useGold } from "@/hooks/useGold";
 
 const FILTERS = ["Tous", "Ce soir", "Vérifiés", "Proches"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -17,6 +18,7 @@ type Filter = (typeof FILTERS)[number];
 const LOCAL_CITIES = ["Bayonne", "Anglet", "Biarritz", "Bidart"];
 
 export default function DiscoverPage() {
+  const { gold, loading: goldLoading } = useGold();
   const [filter, setFilter] = useState<Filter>("Tous");
   const [flares, setFlares] = useState<Flare[]>([]);
   const [ready, setReady] = useState(false);
@@ -109,7 +111,7 @@ export default function DiscoverPage() {
         </div>
       )}
 
-      {!ready ? (
+      {!ready || goldLoading ? (
         <p className="text-center text-white/40 text-sm py-16">Chargement…</p>
       ) : filtered.length === 0 ? (
         <div className="glass rounded-3xl p-10 text-center">
@@ -165,25 +167,43 @@ export default function DiscoverPage() {
                 </span>
               </div>
 
-              <Link
-                href={`/messages/${flare.id}?city=${encodeURIComponent(flare.city)}&intent=${encodeURIComponent(flare.intent)}`}
-                onClick={() => trackFlareRespond(flare.city)}
-                className="block w-full text-center min-h-[48px] leading-[48px] bg-[#C5A46E] text-[#111111] rounded-2xl text-sm font-semibold active:opacity-80"
-              >
-                Répondre au Flare
-              </Link>
+              {gold ? (
+                <Link
+                  href={`/messages/${flare.id}?city=${encodeURIComponent(flare.city)}&intent=${encodeURIComponent(flare.intent)}`}
+                  onClick={() => trackFlareRespond(flare.city)}
+                  className="block w-full text-center min-h-[48px] leading-[48px] bg-[#C5A46E] text-[#111111] rounded-2xl text-sm font-semibold active:opacity-80"
+                >
+                  Répondre au Flare
+                </Link>
+              ) : (
+                <Link
+                  href="/pricing"
+                  className="block w-full text-center min-h-[48px] leading-[48px] bg-white/10 text-white/80 border border-[#C5A46E]/40 rounded-2xl text-sm font-semibold"
+                >
+                  Gold requis pour répondre
+                </Link>
+              )}
             </article>
           ))}
         </div>
       )}
 
       <div className="mt-8 text-center">
-        <Link
-          href="/create"
-          className="inline-flex min-h-[48px] items-center justify-center px-6 rounded-2xl border border-[#C5A46E]/40 text-[#C5A46E] text-sm font-medium"
-        >
-          + Allumer un Flare
-        </Link>
+        {gold ? (
+          <Link
+            href="/create"
+            className="inline-flex min-h-[48px] items-center justify-center px-6 rounded-2xl border border-[#C5A46E]/40 text-[#C5A46E] text-sm font-medium"
+          >
+            + Allumer un Flare
+          </Link>
+        ) : (
+          <Link
+            href="/pricing"
+            className="inline-flex min-h-[48px] items-center justify-center px-6 rounded-2xl border border-[#C5A46E]/40 text-[#C5A46E] text-sm font-medium"
+          >
+            Gold pour allumer un Flare
+          </Link>
+        )}
       </div>
     </div>
   );
