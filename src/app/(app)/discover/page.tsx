@@ -99,10 +99,6 @@ export default function DiscoverPage() {
           </article>
         ))}
       </div>
-
-      <p className="text-center text-xs text-white/30 mt-10">
-        Aperçu démo · les vrais Flares arriveront avec la base de données
-      </p>
     </div>
   );
 }
