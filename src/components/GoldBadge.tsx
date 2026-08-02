@@ -1,19 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import { isGoldMember } from "@/lib/gold";
+import { useGold } from "@/hooks/useGold";
 
 export function GoldBadge() {
-  const [gold, setGold] = useState(false);
+  const { gold, loading } = useGold();
 
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => {
-      setGold(isGoldMember(data.user?.email));
-    });
-  }, []);
+  if (loading) {
+    return (
+      <span className="text-xs text-white/30 border border-white/10 px-3 py-2 rounded-full min-h-[36px] flex items-center">
+        …
+      </span>
+    );
+  }
 
   if (gold) {
     return (
