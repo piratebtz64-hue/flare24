@@ -10,10 +10,15 @@
   --surface: #111111;
 }
 
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background-color: var(--background);
   color: #F5F5F5;
   font-family: 'Inter', system-ui, sans-serif;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .heading-serif {
@@ -34,4 +39,20 @@ body {
 .luxury-btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 10px 15px -3px rgb(197 164 110 / 0.25);
+}
+.luxury-btn:active {
+  transform: scale(0.98);
+}
+
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+button,
+a {
+  touch-action: manipulation;
 }
