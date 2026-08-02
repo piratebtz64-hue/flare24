@@ -10,6 +10,10 @@ import {
   requestNotificationPermission,
   sendTestNotification,
 } from "@/lib/notifications";
+import {
+  trackGoldView,
+  trackNotificationsEnabled,
+} from "@/lib/analytics";
 
 const CITIES = ["Bayonne", "Biarritz", "Anglet", "Bidart", "Saint-Jean-de-Luz"];
 
@@ -44,6 +48,7 @@ export default function ProfilePage() {
     const state = await requestNotificationPermission();
     setNotifStatus(state);
     if (state === "granted") {
+      trackNotificationsEnabled();
       const ok = sendTestNotification();
       setNotifMsg(
         ok
@@ -138,6 +143,7 @@ export default function ProfilePage() {
 
         <Link
           href="/pricing"
+          onClick={() => trackGoldView()}
           className="block glass rounded-2xl px-5 py-4 text-sm border border-[#C5A46E]/25 text-[#C5A46E]"
         >
           Passer Gold — 4,99 €/mois
