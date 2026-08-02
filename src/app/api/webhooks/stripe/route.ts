@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-06-30.basil",
+  apiVersion: "2025-02-24.acacia",
 });
 
 export async function POST(req: Request) {
@@ -32,7 +32,6 @@ export async function POST(req: Request) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
       console.log("[Stripe] checkout.session.completed", session.id, session.customer);
-      // TODO: activer l'abonnement utilisateur en base
       break;
     }
     case "customer.subscription.updated":
@@ -44,11 +43,6 @@ export async function POST(req: Request) {
     case "invoice.payment_failed": {
       const invoice = event.data.object as Stripe.Invoice;
       console.log("[Stripe] payment failed", invoice.id);
-      break;
-    }
-    case "identity.verification_session.verified": {
-      const vs = event.data.object as Stripe.Identity.VerificationSession;
-      console.log("[Stripe] identity verified", vs.id, vs.metadata);
       break;
     }
     default:
