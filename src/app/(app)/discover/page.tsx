@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { getFlares, type Flare } from "@/lib/store";
+import { getExchangeStats, getFlares, type Flare } from "@/lib/store";
 import { trackFilter, trackFlareRespond } from "@/lib/analytics";
 import {
   formatTrust,
   TRUST_EXPLAIN_LINES,
   TRUST_EXPLAIN_SHORT,
+  TRUST_FORMULA,
 } from "@/lib/trust";
 
 const FILTERS = ["Tous", "Ce soir", "Vérifiés", "Proches"] as const;
@@ -20,9 +21,12 @@ export default function DiscoverPage() {
   const [flares, setFlares] = useState<Flare[]>([]);
   const [ready, setReady] = useState(false);
   const [showTrustInfo, setShowTrustInfo] = useState(false);
+  const [stats, setStats] = useState({ messagesSent: 0, conversations: 0 });
 
   useEffect(() => {
     setFlares(getFlares());
+    const s = getExchangeStats();
+    setStats({ messagesSent: s.messagesSent, conversations: s.conversations });
     setReady(true);
   }, []);
 
@@ -83,17 +87,25 @@ export default function DiscoverPage() {
         onClick={() => setShowTrustInfo((v) => !v)}
         className="mb-4 text-left text-xs text-white/40 hover:text-white/60"
       >
-        Trust = note /5 · {showTrustInfo ? "masquer" : "comment ça marche ?"}
+        Trust = note /5 · {showTrustInfo ? "masquer" : "formule + historique"}
       </button>
 
       {showTrustInfo && (
-        <div className="glass rounded-2xl p-4 mb-5 border border-white/10 text-xs text-white/60 space-y-2">
+        <div className="glass rounded-2xl p-4 mb-5 border border-white/10 text-xs text-white/60 space-y-3">
           <p className="text-white/80">{TRUST_EXPLAIN_SHORT}</p>
+          <p className="font-mono text-[#C5A46E] text-[11px] break-all">
+            {TRUST_FORMULA}
+          </p>
           <ul className="list-disc pl-4 space-y-1">
             {TRUST_EXPLAIN_LINES.map((line) => (
               <li key={line}>{line}</li>
             ))}
           </ul>
+          <p className="text-white/50 border-t border-white/10 pt-3">
+            Ton historique : {stats.messagesSent} message
+            {stats.messagesSent > 1 ? "s" : ""} · {stats.conversations}{" "}
+            conversation{stats.conversations > 1 ? "s" : ""}
+          </p>
         </div>
       )}
 
