@@ -4,7 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { trackLoginSuccess, trackSignupStarted } from "@/lib/analytics";
+import {
+  trackForgotPassword,
+  trackLoginSuccess,
+  trackSignupStarted,
+} from "@/lib/analytics";
 
 type Mode = "password" | "magic" | "forgot";
 
@@ -148,6 +152,7 @@ export default function LoginPage() {
         return;
       }
 
+      trackForgotPassword();
       setResetSent(true);
     } catch {
       setError("Impossible d'envoyer l'email. Réessaie plus tard.");
