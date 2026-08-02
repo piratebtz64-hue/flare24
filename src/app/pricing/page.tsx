@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { trackGoldView } from "@/lib/analytics";
+import { trackCheckoutClick, trackGoldView } from "@/lib/analytics";
 
 export default function PricingPage() {
   useEffect(() => {
@@ -59,6 +59,7 @@ export default function PricingPage() {
 
           <a
             href="https://buy.stripe.com/fZu28q9sHdQpeZO11r93y01"
+            onClick={() => trackCheckoutClick()}
             className="luxury-btn block w-full text-center bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111111] py-4 rounded-3xl font-semibold"
           >
             S'abonner — 4,99 €/mois
