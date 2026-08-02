@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getFlares, type Flare } from "@/lib/store";
+import { trackFilter, trackFlareRespond } from "@/lib/analytics";
 
 const FILTERS = ["Tous", "Ce soir", "Vérifiés", "Proches"] as const;
 type Filter = (typeof FILTERS)[number];
@@ -40,6 +41,11 @@ export default function DiscoverPage() {
     });
   }, [flares, filter]);
 
+  function onFilter(f: Filter) {
+    setFilter(f);
+    if (f !== "Tous") trackFilter(f);
+  }
+
   return (
     <div className="px-5 py-8 pb-28">
       <div className="mb-6">
@@ -54,7 +60,7 @@ export default function DiscoverPage() {
           <button
             key={f}
             type="button"
-            onClick={() => setFilter(f)}
+            onClick={() => onFilter(f)}
             className={`shrink-0 min-h-[44px] px-5 rounded-full text-sm font-medium transition active:scale-[0.98] ${
               filter === f
                 ? "bg-[#C5A46E] text-[#111]"
@@ -75,7 +81,7 @@ export default function DiscoverPage() {
           </p>
           <button
             type="button"
-            onClick={() => setFilter("Tous")}
+            onClick={() => onFilter("Tous")}
             className="text-sm text-[#C5A46E]"
           >
             Voir tous
@@ -124,6 +130,7 @@ export default function DiscoverPage() {
 
               <Link
                 href={`/messages/${flare.id}?city=${encodeURIComponent(flare.city)}&intent=${encodeURIComponent(flare.intent)}`}
+                onClick={() => trackFlareRespond(flare.city)}
                 className="block w-full text-center min-h-[48px] leading-[48px] bg-[#C5A46E] text-[#111111] rounded-2xl text-sm font-semibold active:opacity-80"
               >
                 Répondre au Flare
