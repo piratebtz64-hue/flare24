@@ -29,6 +29,9 @@ function mapError(message: string): string {
   if (m.includes("network") || m.includes("fetch")) {
     return "Problème réseau. Vérifie ta connexion et réessaie.";
   }
+  if (m.includes("email not confirmed")) {
+    return "Email pas encore confirmé. Vérifie ta boîte ou crée un compte avec mot de passe.";
+  }
   return "Une erreur est survenue. Réessaie dans un instant.";
 }
 
@@ -67,7 +70,7 @@ export default function LoginPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=/discover`,
           },
         });
         if (signUpError) {
@@ -110,7 +113,7 @@ export default function LoginPage() {
       const { error: authError } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/discover`,
         },
       });
 
@@ -140,10 +143,11 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient();
+      // Must go through callback so the session is established, then update-password
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(
         email,
         {
-          redirectTo: `${window.location.origin}/auth/update-password`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/auth/update-password`,
         }
       );
 
@@ -194,8 +198,8 @@ export default function LoginPage() {
               </div>
               <h2 className="font-semibold text-xl mb-2">Email envoyé</h2>
               <p className="text-white/60 text-sm mb-6">
-                Si un compte existe pour {email}, tu recevras un lien. Vérifie
-                aussi les spams.
+                Ouvre le lien depuis ton téléphone (même navigateur si possible).
+                Vérifie aussi les spams. Le lien ne marche qu'une fois.
               </p>
               <button
                 onClick={() => {
