@@ -1,6 +1,14 @@
+"use client";
+
+import { useEffect } from "react";
 import Link from "next/link";
+import { trackGoldView } from "@/lib/analytics";
 
 export default function PricingPage() {
+  useEffect(() => {
+    trackGoldView();
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0A0A0A]">
       <nav className="border-b border-white/10 bg-[#0A0A0A]/95 backdrop-blur-xl">
