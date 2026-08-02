@@ -7,18 +7,15 @@ export default function TermsPage() {
       <h1 className="heading-serif text-4xl mb-6">Conditions d'utilisation</h1>
       <div className="space-y-4 text-white/60 text-sm leading-relaxed">
         <p>
-          Flare24 est un service réservé aux adultes (18+). Les membres s'engagent
-          à un usage respectueux, consensuel et légal.
+          Flare24 est un service réservé aux adultes (18 ans et plus). Les membres
+          s'engagent à un usage respectueux, consensuel et légal.
         </p>
         <p>
           Les faux profils, le harcèlement et tout contenu illégal sont interdits
-          et entraînent une exclusion.
+          et entraînent l'exclusion du service.
         </p>
         <p>
-          L'abonnement Gold est résiliable à tout moment via Stripe.
-        </p>
-        <p className="text-white/40 text-xs pt-4">
-          Document provisoire — à finaliser avec un conseil juridique.
+          L'abonnement Gold est résiliable à tout moment via le portail Stripe.
         </p>
       </div>
     </div>
