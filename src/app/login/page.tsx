@@ -5,12 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-type Mode = "password" | "magic";
+type Mode = "password" | "magic" | "forgot";
 
 function mapError(message: string): string {
   const m = message.toLowerCase();
   if (m.includes("rate limit")) {
-    return "Trop d'emails envoyés. Utilise le mot de passe, ou réessaie dans 1 heure.";
+    return "Trop d'emails envoyés. Réessaie dans 1 heure.";
   }
   if (m.includes("invalid login")) {
     return "Email ou mot de passe incorrect.";
@@ -31,6 +31,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [sent, setSent] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,7 +60,6 @@ export default function LoginPage() {
           setError(mapError(signUpError.message));
           return;
         }
-        // Sur certains projets, la confirmation email est requise
         setSent(true);
       } else {
         const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -109,6 +109,45 @@ export default function LoginPage() {
     }
   }
 
+  async function handleForgot(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email.includes("@")) {
+      setError("Entre une adresse email valide.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        email,
+        {
+          redirectTo: `${window.location.origin}/auth/update-password`,
+        }
+      );
+
+      if (resetError) {
+        setError(mapError(resetError.message));
+        return;
+      }
+
+      setResetSent(true);
+    } catch {
+      setError("Impossible d'envoyer l'email. Réessaie plus tard.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const title =
+    mode === "forgot"
+      ? "Mot de passe oublié"
+      : isSignUp
+        ? "Créer un compte"
+        : "Connexion";
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-6">
       <div className="w-full max-w-md">
@@ -119,22 +158,44 @@ export default function LoginPage() {
             </div>
             <span className="heading-serif text-2xl">Flare24</span>
           </Link>
-          <h1 className="heading-serif text-3xl tracking-tight mb-2">
-            {isSignUp ? "Créer un compte" : "Connexion"}
-          </h1>
-          <p className="text-white/50 text-sm">Accès réservé aux membres</p>
+          <h1 className="heading-serif text-3xl tracking-tight mb-2">{title}</h1>
+          <p className="text-white/50 text-sm">
+            {mode === "forgot"
+              ? "On t'envoie un lien pour en choisir un nouveau"
+              : "Accès réservé aux membres"}
+          </p>
         </div>
 
         <div className="glass rounded-3xl p-8">
-          {sent ? (
+          {resetSent ? (
             <div className="text-center">
               <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-500/10 flex items-center justify-center">
                 <span className="text-emerald-400 text-2xl">✓</span>
               </div>
-              <h2 className="font-semibold text-xl mb-2">Compte créé</h2>
+              <h2 className="font-semibold text-xl mb-2">Email envoyé</h2>
               <p className="text-white/60 text-sm mb-6">
-                Si la confirmation email est activée, vérifie ta boîte mail.
-                Sinon, reconnecte-toi avec ton mot de passe.
+                Si un compte existe pour {email}, tu recevras un lien pour
+                réinitialiser ton mot de passe. Vérifie aussi les spams.
+              </p>
+              <button
+                onClick={() => {
+                  setResetSent(false);
+                  setMode("password");
+                  setIsSignUp(false);
+                }}
+                className="text-sm text-[#C5A46E] hover:underline"
+              >
+                Retour à la connexion
+              </button>
+            </div>
+          ) : sent ? (
+            <div className="text-center">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                <span className="text-emerald-400 text-2xl">✓</span>
+              </div>
+              <h2 className="font-semibold text-xl mb-2">C'est bon</h2>
+              <p className="text-white/60 text-sm mb-6">
+                Vérifie ta boîte mail si besoin, ou reconnecte-toi avec ton mot de passe.
               </p>
               <button
                 onClick={() => {
@@ -149,34 +210,41 @@ export default function LoginPage() {
             </div>
           ) : (
             <>
-              {/* Tabs */}
-              <div className="flex gap-2 mb-6 p-1 rounded-2xl bg-white/5">
-                <button
-                  type="button"
-                  onClick={() => setMode("password")}
-                  className={`flex-1 text-sm py-2 rounded-xl transition ${
-                    mode === "password"
-                      ? "bg-[#C5A46E] text-[#111] font-semibold"
-                      : "text-white/50"
-                  }`}
-                >
-                  Mot de passe
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMode("magic")}
-                  className={`flex-1 text-sm py-2 rounded-xl transition ${
-                    mode === "magic"
-                      ? "bg-[#C5A46E] text-[#111] font-semibold"
-                      : "text-white/50"
-                  }`}
-                >
-                  Lien email
-                </button>
-              </div>
+              {mode !== "forgot" && (
+                <div className="flex gap-2 mb-6 p-1 rounded-2xl bg-white/5">
+                  <button
+                    type="button"
+                    onClick={() => setMode("password")}
+                    className={`flex-1 text-sm py-2 rounded-xl transition ${
+                      mode === "password"
+                        ? "bg-[#C5A46E] text-[#111] font-semibold"
+                        : "text-white/50"
+                    }`}
+                  >
+                    Mot de passe
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMode("magic")}
+                    className={`flex-1 text-sm py-2 rounded-xl transition ${
+                      mode === "magic"
+                        ? "bg-[#C5A46E] text-[#111] font-semibold"
+                        : "text-white/50"
+                    }`}
+                  >
+                    Lien email
+                  </button>
+                </div>
+              )}
 
               <form
-                onSubmit={mode === "password" ? handlePassword : handleMagic}
+                onSubmit={
+                  mode === "forgot"
+                    ? handleForgot
+                    : mode === "magic"
+                      ? handleMagic
+                      : handlePassword
+                }
                 className="space-y-4"
               >
                 <div>
@@ -193,7 +261,21 @@ export default function LoginPage() {
 
                 {mode === "password" && (
                   <div>
-                    <label className="text-xs text-white/60 block mb-1.5">Mot de passe</label>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs text-white/60">Mot de passe</label>
+                      {!isSignUp && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setMode("forgot");
+                            setError(null);
+                          }}
+                          className="text-xs text-[#C5A46E] hover:underline"
+                        >
+                          Mot de passe oublié ?
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="password"
                       value={password}
@@ -219,13 +301,28 @@ export default function LoginPage() {
                 >
                   {loading
                     ? "Chargement..."
-                    : mode === "magic"
-                      ? "Recevoir le lien"
-                      : isSignUp
-                        ? "Créer mon compte"
-                        : "Se connecter"}
+                    : mode === "forgot"
+                      ? "Envoyer le lien"
+                      : mode === "magic"
+                        ? "Recevoir le lien"
+                        : isSignUp
+                          ? "Créer mon compte"
+                          : "Se connecter"}
                 </button>
               </form>
+
+              {mode === "forgot" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("password");
+                    setError(null);
+                  }}
+                  className="w-full text-center text-sm text-white/50 mt-4 hover:text-[#C5A46E] transition"
+                >
+                  Retour à la connexion
+                </button>
+              )}
 
               {mode === "password" && (
                 <button
