@@ -12,6 +12,7 @@ import {
 } from "@/lib/notifications";
 import {
   trackGoldView,
+  trackLogout,
   trackNotificationsEnabled,
 } from "@/lib/analytics";
 
@@ -65,6 +66,7 @@ export default function ProfilePage() {
   }
 
   async function logout() {
+    trackLogout();
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
