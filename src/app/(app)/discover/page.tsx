@@ -4,21 +4,22 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getFlares, type Flare } from "@/lib/store";
 import { trackFilter, trackFlareRespond } from "@/lib/analytics";
+import {
+  formatTrust,
+  TRUST_EXPLAIN_LINES,
+  TRUST_EXPLAIN_SHORT,
+} from "@/lib/trust";
 
 const FILTERS = ["Tous", "Ce soir", "Vérifiés", "Proches"] as const;
 type Filter = (typeof FILTERS)[number];
 
 const LOCAL_CITIES = ["Bayonne", "Anglet", "Biarritz", "Bidart"];
 
-function trustLabel(raw: number): string {
-  const n = raw > 5 ? Math.min(5, Math.max(1, Math.round(raw / 20))) : raw;
-  return `${n}/5`;
-}
-
 export default function DiscoverPage() {
   const [filter, setFilter] = useState<Filter>("Tous");
   const [flares, setFlares] = useState<Flare[]>([]);
   const [ready, setReady] = useState(false);
+  const [showTrustInfo, setShowTrustInfo] = useState(false);
 
   useEffect(() => {
     setFlares(getFlares());
@@ -60,7 +61,7 @@ export default function DiscoverPage() {
         </p>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto pb-4 mb-4 -mx-1 px-1 scrollbar-none">
+      <div className="flex gap-2 overflow-x-auto pb-4 mb-3 -mx-1 px-1 scrollbar-none">
         {FILTERS.map((f) => (
           <button
             key={f}
@@ -76,6 +77,25 @@ export default function DiscoverPage() {
           </button>
         ))}
       </div>
+
+      <button
+        type="button"
+        onClick={() => setShowTrustInfo((v) => !v)}
+        className="mb-4 text-left text-xs text-white/40 hover:text-white/60"
+      >
+        Trust = note /5 · {showTrustInfo ? "masquer" : "comment ça marche ?"}
+      </button>
+
+      {showTrustInfo && (
+        <div className="glass rounded-2xl p-4 mb-5 border border-white/10 text-xs text-white/60 space-y-2">
+          <p className="text-white/80">{TRUST_EXPLAIN_SHORT}</p>
+          <ul className="list-disc pl-4 space-y-1">
+            {TRUST_EXPLAIN_LINES.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {!ready ? (
         <p className="text-center text-white/40 text-sm py-16">Chargement…</p>
@@ -118,7 +138,7 @@ export default function DiscoverPage() {
                 </div>
                 <div className="text-right shrink-0">
                   <div className="text-[#C5A46E] text-sm font-semibold">
-                    {trustLabel(flare.trust)}
+                    {formatTrust(flare.trust)}
                   </div>
                   <div className="text-[10px] text-white/40">Trust</div>
                 </div>
