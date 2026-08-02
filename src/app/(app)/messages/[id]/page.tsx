@@ -1,41 +1,35 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 
 type Msg = { id: string; text: string; fromMe: boolean };
 
-export default function ConversationPage() {
+function ChatInner() {
   const params = useParams();
   const search = useSearchParams();
-  const id = String(params?.id ?? "chat");
   const city = search.get("city") || "Pays Basque";
   const intent = search.get("intent") || "Flare";
 
-  const [messages, setMessages] = useState<Msg[]>(() => [
-    {
-      id: "sys",
-      text: `${city} — ${intent}`,
-      fromMe: false,
-    },
+  const [messages, setMessages] = useState<Msg[]>([
+    { id: "sys", text: `${city} — ${intent}`, fromMe: false },
   ]);
   const [text, setText] = useState("");
-
-  const title = useMemo(() => city, [city]);
 
   function handleSend(e: React.FormEvent) {
     e.preventDefault();
     const t = text.trim();
     if (!t) return;
-
-    const mine: Msg = { id: `m_${Date.now()}`, text: t, fromMe: true };
-    const reply: Msg = {
-      id: `m_${Date.now() + 1}`,
-      text: "Bien reçu. On peut en parler discrètement.",
-      fromMe: false,
-    };
-    setMessages((prev) => [...prev, mine, reply]);
+    setMessages((prev) => [
+      ...prev,
+      { id: `m_${Date.now()}`, text: t, fromMe: true },
+      {
+        id: `m_${Date.now() + 1}`,
+        text: "Bien reçu. On peut en parler discrètement.",
+        fromMe: false,
+      },
+    ]);
     setText("");
   }
 
@@ -45,7 +39,7 @@ export default function ConversationPage() {
         <Link href="/messages" className="text-xs text-white/40">
           ← Messages
         </Link>
-        <div className="font-semibold mt-1">{title}</div>
+        <div className="font-semibold mt-1">{city}</div>
         <div className="text-xs text-white/40 truncate">{intent}</div>
       </div>
 
@@ -82,5 +76,19 @@ export default function ConversationPage() {
         </button>
       </form>
     </div>
+  );
+}
+
+export default function ConversationPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="px-5 py-16 text-center text-white/40 text-sm">
+          Chargement…
+        </div>
+      }
+    >
+      <ChatInner />
+    </Suspense>
   );
 }
