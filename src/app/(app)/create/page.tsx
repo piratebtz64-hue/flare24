@@ -2,17 +2,25 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { addFlare } from "@/lib/store";
 
 export default function CreateFlarePage() {
   const router = useRouter();
   const [city, setCity] = useState("Bayonne");
   const [intent, setIntent] = useState("");
+  const [tag, setTag] = useState("Privé");
   const [duration, setDuration] = useState("2h");
   const [done, setDone] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!intent.trim()) return;
+    addFlare({
+      city,
+      intent: intent.trim(),
+      tag,
+      expires: duration,
+    });
     setDone(true);
   }
 
@@ -24,7 +32,7 @@ export default function CreateFlarePage() {
         </div>
         <h1 className="heading-serif text-3xl mb-3">Flare allumé</h1>
         <p className="text-white/50 text-sm mb-8 max-w-sm mx-auto">
-          Ton Flare est visible pendant {duration}. Les réponses arriveront dans Messages.
+          Ton Flare est visible pendant {duration}.
         </p>
         <button
           onClick={() => router.push("/discover")}
@@ -71,6 +79,26 @@ export default function CreateFlarePage() {
             required
             className="w-full bg-white/5 border border-white/15 focus:border-[#C5A46E]/60 rounded-2xl px-4 py-3.5 text-sm outline-none resize-none"
           />
+        </div>
+
+        <div>
+          <label className="text-xs text-white/60 block mb-1.5">Contexte</label>
+          <div className="flex flex-wrap gap-2">
+            {["Privé", "Hôtel", "Appartement", "Bar d'abord"].map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setTag(t)}
+                className={`px-3 py-2 rounded-full text-xs transition ${
+                  tag === t
+                    ? "bg-[#C5A46E] text-[#111] font-semibold"
+                    : "bg-white/5 text-white/60 border border-white/10"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
