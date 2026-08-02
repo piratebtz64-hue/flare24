@@ -32,19 +32,21 @@ const CONVOS_KEY = "flare24_convos";
 const BLOCKED_KEY = "flare24_blocked";
 const REPORTS_KEY = "flare24_reports";
 
+/** Démos calibrées : 2/5, 3/5, 4/5 — un seul 5 rare si jamais. */
 const defaultFlares: Flare[] = [
   {
     id: "f1",
     city: "Bayonne",
     intent: "Ce soir · discret",
     tag: "Hôtel",
+    // V1 P1 A1 H0 → 4/5
     trust: computeTrust({
       verified: true,
       hasCity: true,
       hasActivity: true,
-      accountAgeDays: 14,
-      messagesSent: 12,
-      conversations: 3,
+      accountAgeDays: 20,
+      messagesSent: 3,
+      conversations: 1,
     }),
     expires: "2h",
     verified: true,
@@ -54,11 +56,13 @@ const defaultFlares: Flare[] = [
     city: "Biarritz",
     intent: "Après-midi · intensité",
     tag: "Appartement",
+    // V1 P1 A0 H0 → 3/5
     trust: computeTrust({
       verified: true,
       hasCity: true,
       hasActivity: true,
-      messagesSent: 4,
+      accountAgeDays: 5,
+      messagesSent: 2,
       conversations: 1,
     }),
     expires: "45min",
@@ -69,12 +73,13 @@ const defaultFlares: Flare[] = [
     city: "Anglet",
     intent: "Soirée · découverte",
     tag: "Bar d'abord",
+    // V0 P1 A0 H0 → 2/5
     trust: computeTrust({
       verified: false,
       hasCity: true,
       hasActivity: true,
-      accountAgeDays: 30,
-      messagesSent: 2,
+      accountAgeDays: 3,
+      messagesSent: 1,
       conversations: 1,
     }),
     expires: "3h",
@@ -85,13 +90,14 @@ const defaultFlares: Flare[] = [
     city: "Bayonne",
     intent: "Maintenant · urgent",
     tag: "Privé",
+    // V1 P1 A0 H1 → 4/5
     trust: computeTrust({
       verified: true,
       hasCity: true,
       hasActivity: true,
       accountAgeDays: 10,
-      messagesSent: 15,
-      conversations: 4,
+      messagesSent: 8,
+      conversations: 2,
     }),
     expires: "20min",
     verified: true,
@@ -220,7 +226,6 @@ export function reportTarget(id: string, reason: string) {
   blockId(id);
 }
 
-/** Historique d'échanges (messages envoyés + conversations + reports). */
 export function getExchangeStats(): {
   messagesSent: number;
   conversations: number;
