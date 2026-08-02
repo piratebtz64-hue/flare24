@@ -13,11 +13,14 @@ import {
   type Flare,
 } from "@/lib/store";
 import { trackMessageSent, trackReportOrBlock } from "@/lib/analytics";
+import { useGold } from "@/hooks/useGold";
+import { GoldGate } from "@/components/GoldGate";
 
 function ChatInner() {
   const params = useParams();
   const search = useSearchParams();
   const router = useRouter();
+  const { gold, loading: goldLoading } = useGold();
   const rawId = String(params.id || "");
   const city = search.get("city") || "Pays Basque";
   const intent = search.get("intent") || "Flare";
@@ -28,6 +31,7 @@ function ChatInner() {
   const [toast, setToast] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!gold) return;
     const existing = getConversation(rawId);
     if (existing) {
       setConvo(existing);
@@ -38,16 +42,17 @@ function ChatInner() {
       city,
       intent,
       tag: "Privé",
-      trust: 90,
+      trust: 4,
       expires: "2h",
       verified: true,
     };
     const created = startConversation(flare);
     setConvo({ ...created, id: created.id, flareId: rawId });
-  }, [rawId, city, intent]);
+  }, [rawId, city, intent, gold]);
 
   function handleSend(e: React.FormEvent) {
     e.preventDefault();
+    if (!gold) return;
     const t = text.trim();
     if (!t || !convo) return;
 
@@ -75,6 +80,30 @@ function ChatInner() {
     setMenuOpen(false);
     setToast("Signalement enregistré");
     setTimeout(() => router.push("/messages"), 700);
+  }
+
+  if (goldLoading) {
+    return (
+      <div className="px-5 py-16 text-center text-white/40 text-sm">
+        Chargement…
+      </div>
+    );
+  }
+
+  if (!gold) {
+    return (
+      <div className="px-5 py-8">
+        <Link href="/discover" className="text-xs text-white/40">
+          ← Découvrir
+        </Link>
+        <div className="mt-6">
+          <GoldGate
+            title="Messagerie réservée Gold"
+            subtitle="Répondre et chatter nécessite un accès membre Gold."
+          />
+        </div>
+      </div>
+    );
   }
 
   if (!convo) {
