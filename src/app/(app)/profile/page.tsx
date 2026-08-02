@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { getFlares } from "@/lib/store";
+import {
+  getNotificationSupport,
+  requestNotificationPermission,
+  sendTestNotification,
+} from "@/lib/notifications";
 
 const CITIES = ["Bayonne", "Biarritz", "Anglet", "Bidart", "Saint-Jean-de-Luz"];
 
@@ -14,6 +19,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [city, setCity] = useState("Bayonne");
   const [myFlares, setMyFlares] = useState(0);
+  const [notifStatus, setNotifStatus] = useState("…");
+  const [notifMsg, setNotifMsg] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -24,11 +31,32 @@ export default function ProfilePage() {
     const saved = localStorage.getItem("flare24_city");
     if (saved) setCity(saved);
     setMyFlares(getFlares().filter((f) => f.mine).length);
+    setNotifStatus(getNotificationSupport());
   }, []);
 
   function saveCity(c: string) {
     setCity(c);
     localStorage.setItem("flare24_city", c);
+  }
+
+  async function enableNotifications() {
+    setNotifMsg(null);
+    const state = await requestNotificationPermission();
+    setNotifStatus(state);
+    if (state === "granted") {
+      const ok = sendTestNotification();
+      setNotifMsg(
+        ok
+          ? "Notification test envoyée. Vérifie ton écran de verrouillage."
+          : "Permission OK, mais le navigateur a bloqué l'affichage."
+      );
+    } else if (state === "denied") {
+      setNotifMsg("Refusé. Active les notifications dans les réglages du téléphone.");
+    } else if (state === "unsupported") {
+      setNotifMsg("Ce navigateur ne gère pas les notifications.");
+    } else {
+      setNotifMsg("Permission non accordée.");
+    }
   }
 
   async function logout() {
@@ -88,13 +116,26 @@ export default function ProfilePage() {
             <div className="text-[10px] text-white/40">Mes Flares</div>
           </div>
           <div className="bg-white/5 rounded-2xl py-3">
-            <div className="text-[#C5A46E] font-semibold">—</div>
-            <div className="text-[10px] text-white/40">Gold</div>
+            <div className="text-[#C5A46E] font-semibold text-[11px] truncate px-1">
+              {notifStatus}
+            </div>
+            <div className="text-[10px] text-white/40">Notifs</div>
           </div>
         </div>
       </div>
 
       <div className="space-y-2">
+        <button
+          type="button"
+          onClick={enableNotifications}
+          className="w-full text-left glass rounded-2xl px-5 py-4 text-sm border border-white/10"
+        >
+          Activer / tester les notifications
+        </button>
+        {notifMsg && (
+          <p className="text-xs text-white/50 px-2">{notifMsg}</p>
+        )}
+
         <Link
           href="/pricing"
           className="block glass rounded-2xl px-5 py-4 text-sm border border-[#C5A46E]/25 text-[#C5A46E]"
