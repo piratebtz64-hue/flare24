@@ -28,7 +28,7 @@ export default function LandingPage() {
       <section className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-[#C5A46E] mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          Membres vérifiés uniquement
+          Pays Basque · Accès sélectif
         </div>
 
         <h1 className="heading-serif text-5xl md:text-7xl tracking-tighter leading-[1.05] mb-6">
@@ -37,8 +37,8 @@ export default function LandingPage() {
         </h1>
 
         <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-          Flare24 est un cercle sélectif. Des Flares temporaires, des membres vérifiés,
-          une discrétion totale. Ce soir, pas demain.
+          Flare24 est un cercle discret pour adultes consentants.
+          Des Flares temporaires, près de chez toi. Ce soir, pas demain.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -55,15 +55,14 @@ export default function LandingPage() {
       </section>
 
       <section className="max-w-6xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { label: "Membres actifs", value: "412+" },
-            { label: "Villes", value: "Paris & +" },
-            { label: "Flares ce soir", value: "47" },
-            { label: "Trust moyen", value: "91" },
+            { label: "Zone", value: "Pays Basque" },
+            { label: "Format", value: "Flares 24h" },
+            { label: "Accès", value: "Membres" },
           ].map((item) => (
             <div key={item.label} className="glass rounded-3xl p-6 text-center">
-              <div className="text-3xl font-semibold text-[#C5A46E] mb-1">{item.value}</div>
+              <div className="text-2xl font-semibold text-[#C5A46E] mb-1">{item.value}</div>
               <div className="text-xs text-white/50">{item.label}</div>
             </div>
           ))}
@@ -77,9 +76,21 @@ export default function LandingPage() {
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           {[
-            { step: "01", title: "Vérification", desc: "Identité confirmée via Stripe Identity. Pas de faux profils." },
-            { step: "02", title: "Allumer un Flare", desc: "Tu indiques ce que tu cherches ce soir. Le Flare expire automatiquement." },
-            { step: "03", title: "Rencontre", desc: "Chat discret, proposition de rendez-vous, puis le Vault pour garder le souvenir." },
+            {
+              step: "01",
+              title: "Créer ton compte",
+              desc: "Inscription simple. Tu restes maître de ce que tu montres.",
+            },
+            {
+              step: "02",
+              title: "Allumer un Flare",
+              desc: "Tu indiques ce que tu cherches, où, et pour combien de temps. Ça expire tout seul.",
+            },
+            {
+              step: "03",
+              title: "Répondre & rencontrer",
+              desc: "Tu réponds aux Flares près de toi. Chat discret, puis vous décidez ensemble.",
+            },
           ].map((item) => (
             <div key={item.step} className="glass rounded-3xl p-8">
               <div className="text-[#C5A46E] text-sm font-mono mb-4">{item.step}</div>
@@ -97,14 +108,14 @@ export default function LandingPage() {
             Accès complet. 4,99 € / mois.
           </h2>
           <p className="text-white/60 max-w-xl mx-auto mb-8">
-            Découvrir les Flares, en créer, chatter, accéder au Concierge et au Vault.
+            Voir les Flares, en créer, répondre, chatter.
             Résiliable à tout moment.
           </p>
           <Link
             href="/pricing"
             className="luxury-btn inline-block bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111111] px-10 py-4 rounded-3xl font-semibold"
           >
-            Commencer maintenant
+            Voir les tarifs
           </Link>
         </div>
       </section>
@@ -113,11 +124,17 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-white/40">
           <div className="heading-serif text-lg text-white/70">Flare24</div>
           <div className="flex gap-6">
-            <Link href="/legal/privacy" className="hover:text-white transition">Confidentialité</Link>
-            <Link href="/legal/terms" className="hover:text-white transition">CGU</Link>
-            <Link href="/legal/contact" className="hover:text-white transition">Contact</Link>
+            <Link href="/legal/privacy" className="hover:text-white transition">
+              Confidentialité
+            </Link>
+            <Link href="/legal/terms" className="hover:text-white transition">
+              CGU
+            </Link>
+            <Link href="/legal/contact" className="hover:text-white transition">
+              Contact
+            </Link>
           </div>
-          <div>© {new Date().getFullYear()} Flare24. Tous droits réservés.</div>
+          <div>© {new Date().getFullYear()} Flare24</div>
         </div>
       </footer>
     </div>
