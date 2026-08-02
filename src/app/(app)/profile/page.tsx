@@ -15,6 +15,7 @@ import {
   trackLogout,
   trackNotificationsEnabled,
 } from "@/lib/analytics";
+import { goldLabel, isGoldMember } from "@/lib/gold";
 
 const CITIES = ["Bayonne", "Biarritz", "Anglet", "Bidart", "Saint-Jean-de-Luz"];
 
@@ -38,6 +39,8 @@ export default function ProfilePage() {
     setMyFlares(getFlares().filter((f) => f.mine).length);
     setNotifStatus(getNotificationSupport());
   }, []);
+
+  const gold = isGoldMember(email);
 
   function saveCity(c: string) {
     setCity(c);
@@ -86,12 +89,21 @@ export default function ProfilePage() {
             <div className="font-semibold truncate">
               {loading ? "…" : email ?? "Non connecté"}
             </div>
-            <div className="text-xs text-white/40 mt-0.5 flex items-center gap-2">
+            <div className="text-xs text-white/40 mt-0.5 flex items-center gap-2 flex-wrap">
               <span>Membre</span>
-              <span className="text-[#C5A46E]">· Gold à activer</span>
+              <span className={gold ? "text-emerald-400" : "text-[#C5A46E]"}>
+                · {goldLabel(email)}
+              </span>
             </div>
           </div>
         </div>
+
+        {gold && (
+          <div className="mb-5 text-xs text-emerald-400/90 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-4 py-3">
+            Accès Gold actif — permanent pour le compte fondateur. Aucun
+            prélèvement.
+          </div>
+        )}
 
         <div className="mb-5">
           <label className="text-xs text-white/50 block mb-2">Ta ville</label>
@@ -143,13 +155,19 @@ export default function ProfilePage() {
           <p className="text-xs text-white/50 px-2">{notifMsg}</p>
         )}
 
-        <Link
-          href="/pricing"
-          onClick={() => trackGoldView()}
-          className="block glass rounded-2xl px-5 py-4 text-sm border border-[#C5A46E]/25 text-[#C5A46E]"
-        >
-          Passer Gold — 4,99 €/mois
-        </Link>
+        {gold ? (
+          <div className="block glass rounded-2xl px-5 py-4 text-sm border border-emerald-500/25 text-emerald-400">
+            Gold actif · aucun paiement requis
+          </div>
+        ) : (
+          <Link
+            href="/pricing"
+            onClick={() => trackGoldView()}
+            className="block glass rounded-2xl px-5 py-4 text-sm border border-[#C5A46E]/25 text-[#C5A46E]"
+          >
+            Passer Gold — 4,99 €/mois
+          </Link>
+        )}
         <Link
           href="/create"
           className="block glass rounded-2xl px-5 py-4 text-sm hover:border-white/20 border border-transparent transition"
