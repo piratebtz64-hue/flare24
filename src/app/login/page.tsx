@@ -2,22 +2,42 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!email.includes("@")) return;
 
     setLoading(true);
-    // TODO: brancher Supabase Auth magic link
-    // await supabase.auth.signInWithOtp({ email })
-    await new Promise((r) => setTimeout(r, 800));
-    setSent(true);
-    setLoading(false);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const { error: authError } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+        return;
+      }
+
+      setSent(true);
+    } catch {
+      setError("Impossible d'envoyer l'email. Réessaie dans un instant.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -64,6 +84,11 @@ export default function LoginPage() {
                   className="w-full bg-white/5 border border-white/15 focus:border-[#C5A46E]/60 rounded-2xl px-4 py-3.5 text-sm outline-none transition"
                 />
               </div>
+
+              {error && (
+                <p className="text-sm text-red-400 bg-red-500/10 rounded-2xl px-4 py-3">{error}</p>
+              )}
+
               <button
                 type="submit"
                 disabled={loading}
