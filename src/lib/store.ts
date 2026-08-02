@@ -1,9 +1,11 @@
+import { computeTrust } from "@/lib/trust";
+
 export type Flare = {
   id: string;
   city: string;
   intent: string;
   tag: string;
-  /** Trust score 1–5 (not 0–100). */
+  /** Trust score 1–5 */
   trust: number;
   expires: string;
   verified: boolean;
@@ -31,14 +33,13 @@ const CONVOS_KEY = "flare24_convos";
 const BLOCKED_KEY = "flare24_blocked";
 const REPORTS_KEY = "flare24_reports";
 
-/** Few demo flares — big cities only, Trust 3–5. */
 const defaultFlares: Flare[] = [
   {
     id: "f1",
     city: "Bayonne",
     intent: "Ce soir · discret",
     tag: "Hôtel",
-    trust: 4,
+    trust: computeTrust({ verified: true, hasCity: true, hasActivity: true, accountAgeDays: 14 }),
     expires: "2h",
     verified: true,
   },
@@ -47,7 +48,7 @@ const defaultFlares: Flare[] = [
     city: "Biarritz",
     intent: "Après-midi · intensité",
     tag: "Appartement",
-    trust: 3,
+    trust: computeTrust({ verified: true, hasCity: true, hasActivity: true }),
     expires: "45min",
     verified: true,
   },
@@ -56,7 +57,7 @@ const defaultFlares: Flare[] = [
     city: "Anglet",
     intent: "Soirée · découverte",
     tag: "Bar d'abord",
-    trust: 5,
+    trust: computeTrust({ verified: false, hasCity: true, hasActivity: true, accountAgeDays: 30 }),
     expires: "3h",
     verified: false,
   },
@@ -65,7 +66,7 @@ const defaultFlares: Flare[] = [
     city: "Bayonne",
     intent: "Maintenant · urgent",
     tag: "Privé",
-    trust: 4,
+    trust: computeTrust({ verified: true, hasCity: true, hasActivity: true, accountAgeDays: 10 }),
     expires: "20min",
     verified: true,
   },
@@ -196,10 +197,9 @@ export function reportTarget(id: string, reason: string) {
 export function getFlares(): Flare[] {
   const blocked = getBlockedIds();
   const custom = read<Flare[]>(FLARES_KEY, []);
-  // Migrate old 0–100 trust scores if still in localStorage
   const normalized = custom.map((f) => ({
     ...f,
-    trust: f.trust > 5 ? Math.min(5, Math.max(1, Math.round(f.trust / 20))) : f.trust,
+    trust: f.trust > 5 ? computeTrust({ verified: f.verified, hasCity: true, hasActivity: true }) : f.trust,
   }));
   const all = [
     ...normalized,
@@ -214,7 +214,12 @@ export function addFlare(
   const full: Flare = {
     ...flare,
     id: `mine_${Date.now()}`,
-    trust: 3,
+    trust: computeTrust({
+      verified: false,
+      hasCity: Boolean(flare.city),
+      hasActivity: true,
+      accountAgeDays: 0,
+    }),
     verified: false,
     mine: true,
   };
