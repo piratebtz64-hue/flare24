@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ScreenGuard } from "@/components/ScreenGuard";
+import { GoldBadge } from "@/components/GoldBadge";
 
 const nav = [
   { href: "/discover", label: "Découvrir", icon: "✦" },
@@ -24,12 +25,7 @@ export default function AppLayout({
               </div>
               <span className="heading-serif text-xl">Flare24</span>
             </Link>
-            <Link
-              href="/pricing"
-              className="text-xs text-[#C5A46E] border border-[#C5A46E]/30 px-3 py-2 rounded-full min-h-[36px] flex items-center"
-            >
-              Gold
-            </Link>
+            <GoldBadge />
           </div>
         </header>
 
