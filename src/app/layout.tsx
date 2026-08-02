@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AuthHashCatcher } from "@/components/AuthHashCatcher";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -31,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="bg-[#0A0A0A] text-[#F5F5F5] antialiased">
+        <AuthHashCatcher />
         {children}
         <Analytics />
         <SpeedInsights />
