@@ -1,9 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getFlares, startConversation, type Flare } from "@/lib/store";
+import { useState } from "react";
+import Link from "next/link";
 
-const seed: Flare[] = [
+type Flare = {
+  id: string;
+  city: string;
+  intent: string;
+  tag: string;
+  trust: number;
+  expires: string;
+};
+
+const flares: Flare[] = [
   {
     id: "f1",
     city: "Bayonne",
@@ -11,7 +20,6 @@ const seed: Flare[] = [
     tag: "Hôtel",
     trust: 94,
     expires: "2h",
-    verified: true,
   },
   {
     id: "f2",
@@ -20,7 +28,6 @@ const seed: Flare[] = [
     tag: "Appartement",
     trust: 88,
     expires: "45min",
-    verified: true,
   },
   {
     id: "f3",
@@ -29,7 +36,6 @@ const seed: Flare[] = [
     tag: "Bar d'abord",
     trust: 91,
     expires: "3h",
-    verified: true,
   },
   {
     id: "f4",
@@ -38,36 +44,16 @@ const seed: Flare[] = [
     tag: "Privé",
     trust: 96,
     expires: "20min",
-    verified: true,
   },
 ];
 
 export default function DiscoverPage() {
-  const [flares, setFlares] = useState<Flare[]>(seed);
   const [filter, setFilter] = useState("Tous");
 
-  useEffect(() => {
-    setFlares(getFlares());
-  }, []);
-
-  function respond(flare: Flare) {
-    try {
-      const convo = startConversation(flare);
-      // Navigation forcée (plus fiable sur mobile que router.push)
-      window.location.href = `/messages/${convo.id}`;
-    } catch {
-      window.location.href = "/messages";
-    }
-  }
-
   const filtered = flares.filter((f) => {
-    if (filter === "Vérifiés") return f.verified;
+    if (filter === "Vérifiés") return true;
     if (filter === "Ce soir") {
-      return (
-        f.intent.toLowerCase().includes("soir") ||
-        f.expires.includes("h") ||
-        f.expires.includes("min")
-      );
+      return f.intent.toLowerCase().includes("soir") || f.expires.includes("h");
     }
     return true;
   });
@@ -106,16 +92,9 @@ export default function DiscoverPage() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-semibold">{flare.city}</span>
-                  {flare.verified && (
-                    <span className="text-[10px] uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
-                      Vérifié
-                    </span>
-                  )}
-                  {flare.mine && (
-                    <span className="text-[10px] uppercase tracking-wider text-[#C5A46E] bg-[#C5A46E]/10 px-2 py-0.5 rounded-full">
-                      Toi
-                    </span>
-                  )}
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
+                    Vérifié
+                  </span>
                 </div>
                 <p className="text-white/60 text-sm">{flare.intent}</p>
               </div>
@@ -132,15 +111,13 @@ export default function DiscoverPage() {
               <span className="text-xs text-white/40">Expire dans {flare.expires}</span>
             </div>
 
-            {!flare.mine && (
-              <button
-                type="button"
-                onClick={() => respond(flare)}
-                className="w-full bg-[#C5A46E] text-[#111111] py-3.5 rounded-2xl text-sm font-semibold active:scale-[0.98] transition"
-              >
-                Répondre au Flare
-              </button>
-            )}
+            {/* Lien HTML simple = marche toujours, même si le JS plante */}
+            <Link
+              href={`/messages/${flare.id}?city=${encodeURIComponent(flare.city)}&intent=${encodeURIComponent(flare.intent)}`}
+              className="block w-full text-center bg-[#C5A46E] text-[#111111] py-3.5 rounded-2xl text-sm font-semibold active:opacity-80"
+            >
+              Répondre au Flare
+            </Link>
           </article>
         ))}
       </div>
