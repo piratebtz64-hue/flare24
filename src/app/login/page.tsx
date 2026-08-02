@@ -9,19 +9,22 @@ type Mode = "password" | "magic" | "forgot";
 
 function mapError(message: string): string {
   const m = message.toLowerCase();
-  if (m.includes("rate limit")) {
-    return "Trop d'emails envoyés. Réessaie dans 1 heure.";
+  if (m.includes("rate limit") || m.includes("email rate")) {
+    return "Trop d'emails envoyés. Utilise le mot de passe, ou réessaie dans 1 h.";
   }
-  if (m.includes("invalid login")) {
+  if (m.includes("invalid login") || m.includes("invalid credentials")) {
     return "Email ou mot de passe incorrect.";
   }
   if (m.includes("already registered") || m.includes("user already")) {
     return "Ce compte existe déjà. Connecte-toi avec ton mot de passe.";
   }
-  if (m.includes("password")) {
+  if (m.includes("password") && m.includes("6")) {
     return "Le mot de passe doit faire au moins 6 caractères.";
   }
-  return message;
+  if (m.includes("network") || m.includes("fetch")) {
+    return "Problème réseau. Vérifie ta connexion et réessaie.";
+  }
+  return "Une erreur est survenue. Réessaie dans un instant.";
 }
 
 export default function LoginPage() {
@@ -34,11 +37,16 @@ export default function LoginPage() {
   const [resetSent, setResetSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ageOk, setAgeOk] = useState(false);
 
   async function handlePassword(e: React.FormEvent) {
     e.preventDefault();
     if (!email.includes("@") || password.length < 6) {
       setError("Email valide et mot de passe (6 caractères min.) requis.");
+      return;
+    }
+    if (isSignUp && !ageOk) {
+      setError("Tu dois confirmer avoir 18 ans ou plus.");
       return;
     }
 
@@ -82,7 +90,10 @@ export default function LoginPage() {
 
   async function handleMagic(e: React.FormEvent) {
     e.preventDefault();
-    if (!email.includes("@")) return;
+    if (!email.includes("@")) {
+      setError("Entre une adresse email valide.");
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -149,9 +160,9 @@ export default function LoginPage() {
         : "Connexion";
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-6">
+    <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-6 py-10">
       <div className="w-full max-w-md">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#C5A46E] to-[#A67C52] flex items-center justify-center">
               <span className="text-[#0A0A0A] font-bold text-lg">F</span>
@@ -162,7 +173,7 @@ export default function LoginPage() {
           <p className="text-white/50 text-sm">
             {mode === "forgot"
               ? "On t'envoie un lien pour en choisir un nouveau"
-              : "Accès réservé aux membres"}
+              : "Cercle discret · Pays Basque · 18+"}
           </p>
         </div>
 
@@ -174,8 +185,8 @@ export default function LoginPage() {
               </div>
               <h2 className="font-semibold text-xl mb-2">Email envoyé</h2>
               <p className="text-white/60 text-sm mb-6">
-                Si un compte existe pour {email}, tu recevras un lien pour
-                réinitialiser ton mot de passe. Vérifie aussi les spams.
+                Si un compte existe pour {email}, tu recevras un lien. Vérifie
+                aussi les spams.
               </p>
               <button
                 onClick={() => {
@@ -183,7 +194,7 @@ export default function LoginPage() {
                   setMode("password");
                   setIsSignUp(false);
                 }}
-                className="text-sm text-[#C5A46E] hover:underline"
+                className="text-sm text-[#C5A46E]"
               >
                 Retour à la connexion
               </button>
@@ -195,7 +206,9 @@ export default function LoginPage() {
               </div>
               <h2 className="font-semibold text-xl mb-2">C'est bon</h2>
               <p className="text-white/60 text-sm mb-6">
-                Vérifie ta boîte mail si besoin, ou reconnecte-toi avec ton mot de passe.
+                {mode === "magic"
+                  ? "Ouvre le lien reçu par email pour entrer."
+                  : "Tu peux te connecter avec ton mot de passe. Vérifie ta boîte si un email de confirmation est demandé."}
               </p>
               <button
                 onClick={() => {
@@ -203,19 +216,27 @@ export default function LoginPage() {
                   setIsSignUp(false);
                   setMode("password");
                 }}
-                className="text-sm text-[#C5A46E] hover:underline"
+                className="text-sm text-[#C5A46E]"
               >
                 Se connecter
               </button>
             </div>
           ) : (
             <>
+              {mode === "password" && (
+                <p className="text-xs text-white/40 mb-4 leading-relaxed">
+                  {isSignUp
+                    ? "Crée un compte avec email + mot de passe. Plus simple que le lien magique (moins de limites)."
+                    : "Astuce : le mot de passe évite les blocages d'emails. Lien email = option secondaire."}
+                </p>
+              )}
+
               {mode !== "forgot" && (
                 <div className="flex gap-2 mb-6 p-1 rounded-2xl bg-white/5">
                   <button
                     type="button"
                     onClick={() => setMode("password")}
-                    className={`flex-1 text-sm py-2 rounded-xl transition ${
+                    className={`flex-1 text-sm py-2.5 rounded-xl transition ${
                       mode === "password"
                         ? "bg-[#C5A46E] text-[#111] font-semibold"
                         : "text-white/50"
@@ -226,7 +247,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setMode("magic")}
-                    className={`flex-1 text-sm py-2 rounded-xl transition ${
+                    className={`flex-1 text-sm py-2.5 rounded-xl transition ${
                       mode === "magic"
                         ? "bg-[#C5A46E] text-[#111] font-semibold"
                         : "text-white/50"
@@ -255,7 +276,8 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="vous@exemple.com"
                     required
-                    className="w-full bg-white/5 border border-white/15 focus:border-[#C5A46E]/60 rounded-2xl px-4 py-3.5 text-sm outline-none transition"
+                    autoComplete="email"
+                    className="w-full bg-white/5 border border-white/15 focus:border-[#C5A46E]/60 rounded-2xl px-4 py-3.5 text-sm outline-none"
                   />
                 </div>
 
@@ -270,9 +292,9 @@ export default function LoginPage() {
                             setMode("forgot");
                             setError(null);
                           }}
-                          className="text-xs text-[#C5A46E] hover:underline"
+                          className="text-xs text-[#C5A46E]"
                         >
-                          Mot de passe oublié ?
+                          Oublié ?
                         </button>
                       )}
                     </div>
@@ -280,12 +302,25 @@ export default function LoginPage() {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
+                      placeholder="6 caractères minimum"
                       required
                       minLength={6}
-                      className="w-full bg-white/5 border border-white/15 focus:border-[#C5A46E]/60 rounded-2xl px-4 py-3.5 text-sm outline-none transition"
+                      autoComplete={isSignUp ? "new-password" : "current-password"}
+                      className="w-full bg-white/5 border border-white/15 focus:border-[#C5A46E]/60 rounded-2xl px-4 py-3.5 text-sm outline-none"
                     />
                   </div>
+                )}
+
+                {mode === "password" && isSignUp && (
+                  <label className="flex items-start gap-3 text-xs text-white/60 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={ageOk}
+                      onChange={(e) => setAgeOk(e.target.checked)}
+                      className="mt-0.5"
+                    />
+                    <span>J'ai 18 ans ou plus. Contenu réservé aux adultes consentants.</span>
+                  </label>
                 )}
 
                 {error && (
@@ -297,7 +332,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="luxury-btn w-full bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111111] py-3.5 rounded-2xl font-semibold text-sm disabled:opacity-60"
+                  className="luxury-btn w-full min-h-[48px] bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111111] py-3.5 rounded-2xl font-semibold text-sm disabled:opacity-60"
                 >
                   {loading
                     ? "Chargement..."
@@ -318,7 +353,7 @@ export default function LoginPage() {
                     setMode("password");
                     setError(null);
                   }}
-                  className="w-full text-center text-sm text-white/50 mt-4 hover:text-[#C5A46E] transition"
+                  className="w-full text-center text-sm text-white/50 mt-4"
                 >
                   Retour à la connexion
                 </button>
@@ -331,7 +366,7 @@ export default function LoginPage() {
                     setIsSignUp(!isSignUp);
                     setError(null);
                   }}
-                  className="w-full text-center text-sm text-white/50 mt-4 hover:text-[#C5A46E] transition"
+                  className="w-full text-center text-sm text-white/50 mt-4"
                 >
                   {isSignUp
                     ? "Déjà un compte ? Se connecter"
@@ -343,9 +378,12 @@ export default function LoginPage() {
         </div>
 
         <p className="text-center text-sm text-white/40 mt-6">
-          Pas encore membre ?{" "}
-          <Link href="/pricing" className="text-[#C5A46E] hover:underline">
-            Voir les tarifs
+          <Link href="/pricing" className="text-[#C5A46E]">
+            Voir les tarifs Gold
+          </Link>
+          {" · "}
+          <Link href="/legal/terms" className="hover:text-white/60">
+            CGU
           </Link>
         </p>
       </div>
