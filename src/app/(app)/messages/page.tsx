@@ -5,8 +5,8 @@ export default function MessagesPage() {
       <p className="text-white/50 text-sm mb-10">Conversations discrètes et temporaires.</p>
 
       <div className="glass rounded-3xl p-10 text-center">
-        <div className="text-3xl mb-4 opacity-40">◈</div>
-        <p className="text-white/50 text-sm">
+        <div className="text-3xl mb-4 text-[#C5A46E]/50">◈</div>
+        <p className="text-white/60 text-sm leading-relaxed">
           Aucune conversation pour le moment.
           <br />
           Réponds à un Flare pour démarrer.
