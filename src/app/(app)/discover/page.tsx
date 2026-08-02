@@ -1,58 +1,43 @@
-const flares = [
-  {
-    id: "1",
-    city: "Bayonne",
-    intent: "Ce soir · discret",
-    tag: "Hôtel",
-    trust: 94,
-    expires: "2h",
-    verified: true,
-  },
-  {
-    id: "2",
-    city: "Biarritz",
-    intent: "Après-midi · intensité",
-    tag: "Appartement",
-    trust: 88,
-    expires: "45min",
-    verified: true,
-  },
-  {
-    id: "3",
-    city: "Anglet",
-    intent: "Soirée · découverte",
-    tag: "Bar d'abord",
-    trust: 91,
-    expires: "3h",
-    verified: true,
-  },
-  {
-    id: "4",
-    city: "Saint-Jean-de-Luz",
-    intent: "Maintenant · urgent",
-    tag: "Privé",
-    trust: 96,
-    expires: "20min",
-    verified: true,
-  },
-];
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { getFlares, startConversation, type Flare } from "@/lib/store";
 
 export default function DiscoverPage() {
+  const router = useRouter();
+  const [flares, setFlares] = useState<Flare[]>([]);
+  const [filter, setFilter] = useState("Tous");
+
+  useEffect(() => {
+    setFlares(getFlares());
+  }, []);
+
+  function respond(flare: Flare) {
+    const convo = startConversation(flare);
+    router.push(`/messages/${convo.id}`);
+  }
+
+  const filtered = flares.filter((f) => {
+    if (filter === "Vérifiés") return f.verified;
+    if (filter === "Ce soir") return f.intent.toLowerCase().includes("soir") || f.expires.includes("h");
+    return true;
+  });
+
   return (
     <div className="px-5 py-8">
       <div className="mb-8">
         <h1 className="heading-serif text-4xl tracking-tight mb-2">Découvrir</h1>
-        <p className="text-white/50 text-sm">
-          Flares actives près de toi · Pays Basque
-        </p>
+        <p className="text-white/50 text-sm">Flares actives près de toi · Pays Basque</p>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-4 mb-2 -mx-1 px-1">
-        {["Tous", "Ce soir", "Vérifiés", "Proches"].map((f, i) => (
+        {["Tous", "Ce soir", "Vérifiés", "Proches"].map((f) => (
           <button
             key={f}
+            onClick={() => setFilter(f)}
             className={`shrink-0 px-4 py-2 rounded-full text-xs font-medium transition ${
-              i === 0
+              filter === f
                 ? "bg-[#C5A46E] text-[#111]"
                 : "bg-white/5 text-white/60 border border-white/10"
             }`}
@@ -63,10 +48,10 @@ export default function DiscoverPage() {
       </div>
 
       <div className="space-y-4">
-        {flares.map((flare) => (
+        {filtered.map((flare) => (
           <article
             key={flare.id}
-            className="glass rounded-3xl p-5 border border-white/5 hover:border-[#C5A46E]/25 transition"
+            className="glass rounded-3xl p-5 border border-white/5"
           >
             <div className="flex items-start justify-between mb-3">
               <div>
@@ -75,6 +60,11 @@ export default function DiscoverPage() {
                   {flare.verified && (
                     <span className="text-[10px] uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full">
                       Vérifié
+                    </span>
+                  )}
+                  {flare.mine && (
+                    <span className="text-[10px] uppercase tracking-wider text-[#C5A46E] bg-[#C5A46E]/10 px-2 py-0.5 rounded-full">
+                      Toi
                     </span>
                   )}
                 </div>
@@ -93,9 +83,14 @@ export default function DiscoverPage() {
               <span className="text-xs text-white/40">Expire dans {flare.expires}</span>
             </div>
 
-            <button className="mt-4 w-full luxury-btn bg-[#C5A46E]/15 hover:bg-[#C5A46E]/25 text-[#C5A46E] py-3 rounded-2xl text-sm font-semibold transition">
-              Répondre au Flare
-            </button>
+            {!flare.mine && (
+              <button
+                onClick={() => respond(flare)}
+                className="mt-4 w-full luxury-btn bg-[#C5A46E]/15 hover:bg-[#C5A46E]/25 text-[#C5A46E] py-3 rounded-2xl text-sm font-semibold transition"
+              >
+                Répondre au Flare
+              </button>
+            )}
           </article>
         ))}
       </div>
