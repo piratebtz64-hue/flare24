@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { addFlare } from "@/lib/store";
+import { createFlareInDb } from "@/lib/flares-db";
 import { trackFlareCreated } from "@/lib/analytics";
 import { useGold } from "@/hooks/useGold";
 import { GoldGate } from "@/components/GoldGate";
@@ -23,6 +24,7 @@ export default function CreateFlarePage() {
   const [tag, setTag] = useState("Privé");
   const [duration, setDuration] = useState("2h");
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,22 +32,39 @@ export default function CreateFlarePage() {
     if (saved && CITIES.includes(saved)) setCity(saved);
   }, []);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!gold) return;
+    if (!gold || submitting) return;
     const text = intent.trim();
     if (text.length < 3) {
       setError("Décris un peu ce que tu cherches (3 caractères min.).");
       return;
     }
     setError(null);
+    setSubmitting(true);
+
+    const dbFlare = await createFlareInDb({
+      city,
+      intent: text,
+      tag,
+      durationLabel: duration,
+    });
+
+    // Toujours garder une copie locale (fallback / offline)
     addFlare({
       city,
       intent: text,
       tag,
       expires: duration,
     });
+
+    if (!dbFlare) {
+      // Soft warning: local OK, base pas encore synchro
+      console.warn("[create] Flare local only — table flares / RLS ?");
+    }
+
     trackFlareCreated(city, duration);
+    setSubmitting(false);
     setDone(true);
   }
 
@@ -190,9 +209,10 @@ export default function CreateFlarePage() {
 
         <button
           type="submit"
-          className="luxury-btn w-full min-h-[52px] bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111] py-4 rounded-3xl font-semibold"
+          disabled={submitting}
+          className="luxury-btn w-full min-h-[52px] bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111] py-4 rounded-3xl font-semibold disabled:opacity-60"
         >
-          Allumer le Flare
+          {submitting ? "Publication…" : "Allumer le Flare"}
         </button>
       </form>
     </div>
