@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { getExchangeStats, getFlares, type Flare } from "@/lib/store";
+import { fetchFlaresFromDb } from "@/lib/flares-db";
 import { trackFilter, trackFlareRespond } from "@/lib/analytics";
 import {
   formatTrust,
@@ -17,6 +18,16 @@ type Filter = (typeof FILTERS)[number];
 
 const LOCAL_CITIES = ["Bayonne", "Anglet", "Biarritz", "Bidart"];
 
+function mergeFlares(db: Flare[], local: Flare[]): Flare[] {
+  const map = new Map<string, Flare>();
+  // DB d'abord (source de vérité partagée)
+  for (const f of db) map.set(f.id, f);
+  for (const f of local) {
+    if (!map.has(f.id)) map.set(f.id, f);
+  }
+  return Array.from(map.values());
+}
+
 export default function DiscoverPage() {
   const { gold, loading: goldLoading } = useGold();
   const [filter, setFilter] = useState<Filter>("Tous");
@@ -26,10 +37,23 @@ export default function DiscoverPage() {
   const [stats, setStats] = useState({ messagesSent: 0, conversations: 0 });
 
   useEffect(() => {
-    setFlares(getFlares());
-    const s = getExchangeStats();
-    setStats({ messagesSent: s.messagesSent, conversations: s.conversations });
-    setReady(true);
+    let cancelled = false;
+    (async () => {
+      const local = getFlares();
+      const s = getExchangeStats();
+      if (!cancelled) {
+        setStats({ messagesSent: s.messagesSent, conversations: s.conversations });
+        setFlares(local);
+      }
+      const db = await fetchFlaresFromDb();
+      if (!cancelled) {
+        setFlares(mergeFlares(db, local));
+        setReady(true);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const filtered = useMemo(() => {
