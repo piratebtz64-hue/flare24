@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { trackCheckoutClick, trackGoldView } from "@/lib/analytics";
+import { LAUNCH_COPY, LAUNCH_LIMIT } from "@/lib/launch";
 
 export default function PricingPage() {
   useEffect(() => {
@@ -25,22 +26,34 @@ export default function PricingPage() {
         </div>
       </nav>
 
-      <section className="max-w-xl mx-auto px-6 pt-20 pb-24 text-center">
+      <section className="max-w-xl mx-auto px-6 pt-16 pb-24 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-xs text-emerald-400 mb-6">
+          {LAUNCH_COPY.badge} · {LAUNCH_LIMIT} places
+        </div>
+
         <div className="text-xs tracking-[2px] text-[#C5A46E] font-semibold mb-4">
           FLARE24 GOLD
         </div>
         <h1 className="heading-serif text-5xl tracking-tight mb-4">Accès membre</h1>
-        <p className="text-white/60 mb-10">
-          Pour voir les Flares, en allumer, et répondre.
+        <p className="text-white/60 mb-6">
+          Pour allumer des Flares, répondre et chatter.
           Simple. Résiliable quand tu veux.
         </p>
+
+        <div className="glass rounded-2xl p-4 mb-8 border border-emerald-500/20 text-left text-sm text-white/70">
+          <div className="font-semibold text-emerald-400 mb-1">{LAUNCH_COPY.title}</div>
+          <p>{LAUNCH_COPY.body}</p>
+          <Link href="/login" className="inline-block mt-3 text-[#C5A46E] text-xs font-medium">
+            {LAUNCH_COPY.cta} →
+          </Link>
+        </div>
 
         <div className="glass rounded-[2rem] p-10 border border-[#C5A46E]/25 text-left">
           <div className="flex items-baseline gap-2 mb-2">
             <span className="text-5xl font-semibold text-[#C5A46E]">4,99 €</span>
             <span className="text-white/50">/ mois</span>
           </div>
-          <p className="text-xs text-white/40 mb-6">Moins qu’un verre. Accès complet.</p>
+          <p className="text-xs text-white/40 mb-6">Après la promo lancement · accès complet.</p>
 
           <ul className="space-y-3 text-sm text-white/80 mb-8">
             <li className="flex items-center gap-3">
