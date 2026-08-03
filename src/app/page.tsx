@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LAUNCH_COPY, LAUNCH_LIMIT } from "@/lib/launch";
 
 export default function LandingPage() {
   return (
@@ -26,9 +27,12 @@ export default function LandingPage() {
       </nav>
 
       <section className="max-w-6xl mx-auto px-6 pt-24 pb-20 text-center">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-400 mb-4">
+          {LAUNCH_COPY.badge} · {LAUNCH_LIMIT} premiers → 1 mois Gold offert
+        </div>
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-[#C5A46E] mb-8">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          Pays Basque · Accès sélectif
+          Pays Basque · Rencontres discrètes
         </div>
 
         <h1 className="heading-serif text-5xl md:text-7xl tracking-tighter leading-[1.05] mb-6">
@@ -36,17 +40,21 @@ export default function LandingPage() {
           les rencontres <span className="text-[#C5A46E]">intenses</span>.
         </h1>
 
-        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-6 leading-relaxed">
           Flare24 est un cercle discret pour adultes consentants.
           Des Flares temporaires, près de chez toi. Ce soir, pas demain.
         </p>
 
+        <p className="text-sm text-emerald-400/90 mb-10 font-medium">
+          {LAUNCH_COPY.short}
+        </p>
+
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="/pricing"
+            href="/login"
             className="luxury-btn bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111111] px-10 py-4 rounded-3xl font-semibold text-base"
           >
-            Rejoindre Flare24 Gold — 4,99 €/mois
+            S'inscrire — {LAUNCH_LIMIT} premiers offerts
           </Link>
           <Link href="#how" className="text-sm text-white/50 hover:text-white transition">
             Comment ça marche →
@@ -105,17 +113,16 @@ export default function LandingPage() {
         <div className="glass rounded-[2rem] p-10 md:p-14 text-center border border-[#C5A46E]/20">
           <div className="text-xs tracking-[2px] text-[#C5A46E] font-semibold mb-4">FLARE24 GOLD</div>
           <h2 className="heading-serif text-4xl md:text-5xl tracking-tight mb-4">
-            Accès complet. 4,99 € / mois.
+            {LAUNCH_COPY.title}
           </h2>
           <p className="text-white/60 max-w-xl mx-auto mb-8">
-            Voir les Flares, en créer, répondre, chatter.
-            Résiliable à tout moment.
+            {LAUNCH_COPY.body}
           </p>
           <Link
-            href="/pricing"
+            href="/login"
             className="luxury-btn inline-block bg-[#C5A46E] hover:bg-[#B38B5A] text-[#111111] px-10 py-4 rounded-3xl font-semibold"
           >
-            Voir les tarifs
+            {LAUNCH_COPY.cta}
           </Link>
         </div>
       </section>
